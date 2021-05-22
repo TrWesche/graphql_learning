@@ -1,0 +1,29 @@
+{
+  "name": "graphql-noorm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start-babel": "nodemon --ext js,graphql --exec ./node_modules/.bin/babel-node src/server.js ",
+    "start": "node ./src/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "express": "^4.17.1",
+    "express-graphql": "^0.12.0",
+    "graphql": "^15.5.0",
+    "graphql-subscriptions": "^1.2.1",
+    "graphql-tag": "^2.12.4",
+    "graphql-tools": "^7.0.5",
+    "subscriptions-transport-ws": "^0.9.18",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}

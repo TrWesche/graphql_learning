@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+      "rootDir": "src",
+      "outDir": "dist",
+      "strict": true,
+      "module": "commonjs",
+      "lib": [ "es2016", "ES2018.Promise", "DOM", "ESNext" ],
+      "moduleResolution": "node",
+      "esModuleInterop": true,
+      "strictPropertyInitialization": false,
+      "sourceMap": true,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true
+    },
+    "include": ["src/**/*"]
+} 
