@@ -1,0 +1,14 @@
+version: '3.1'
+
+services:
+    arangodb-gqllrn:
+        image: arangodb:latest
+        restart: always
+        ports:
+            - 1234:8529
+        environment:
+            ARANGO_ROOT_PASSWORD: graphqlandarangodb
+        volumes:
+            - arango-gqllrn-persist:/var/lib/arangodb3
+volumes:
+    arango-gqllrn-persist:
