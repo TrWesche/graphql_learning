@@ -4,13 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start-babel": "nodemon --ext js,graphql --exec ./node_modules/.bin/babel-node src/server.js ",
-    "start": "node ./src/server.js"
+    "start": "nodemon --ext js,graphql --exec ./node_modules/.bin/babel-node src/server.js "
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "arangojs": "^7.5.0",
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",
