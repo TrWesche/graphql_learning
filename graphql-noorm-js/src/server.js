@@ -7,7 +7,8 @@ const { PubSub } = require('graphql-subscriptions');
 const { SubscriptionServer } = require('subscriptions-transport-ws');
 
 import schema from './schema';
-import db from "./db";
+import UserRepo from './repositories/user.repo';
+import CommentRepo from './repositories/comment.repo';
 
 const app = express();
 const pubsub = new PubSub();
@@ -17,7 +18,10 @@ app.use(
   graphqlHTTP({
     schema: schema,
     graphiql: true,
-    context: { db, pubsub }
+    context: { 
+      UserRepo, 
+      CommentRepo,
+      pubsub }
 }));
 
 const server = app.listen(4000, () => {

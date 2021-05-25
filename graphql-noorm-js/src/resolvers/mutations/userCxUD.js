@@ -1,84 +1,65 @@
 import { v4 as uuidV4 } from "uuid";
 
 const resolvers = {
-    createUser(parent, args, { db }, info) {
-        const emailTaken = db.users.some((user) => {
-            return user.email.toLowerCase() === args.data.email.toLowerCase();
-        })
+    async createUser(parent, args, { UserRepo }, info) {
+        const emailCheck = await UserRepo.checkUniqueEamil(args.data);
 
-        if (emailTaken) {
+        if (emailCheck.length() !== 0) {
             throw new Error(`An account has already been registered under that email.`)
         }
 
-        // The "..." syntax shown below comes from the babel-plugin-transform-object-rest-spread
-        const user = {
-            id: uuidV4(),
-            ...args.data
-        }
-
-        db.users.push(user);
+        const user = UserRepo.createUser(args.data);
 
         return user;
     },
-    deleteUser(parent, args, { db }, info) {
-        const userIndex = db.users.findIndex((user) => {
-            return user.id === args.user_id;
-        })
+    async deleteUser(parent, args, { UserRepo }, info) {
+        const userCheck = await UserRepo.getUserByID(args.user_id);
 
-        if (userIndex === -1) {
+        if (userCheck.length() === 0) {
             throw new Error(`User not found`);
         }
 
-        const deletedUsers = db.users.splice(userIndex, 1);
+        const deletedUser = UserRepo.deleteUser(args.user_id);
 
-        db.posts = db.posts.filter((post) => {
-            const match = post.author_id === args.user_id;
+        // TODO: Need to re-implement this with queries
+        // db.posts = db.posts.filter((post) => {
+        //     const match = post.author_id === args.user_id;
 
-            if (match) {
-                db.comments = db.comments.filter((comment) => {
-                    return comment.post_id !== post.id;
-                })
-            }
+        //     if (match) {
+        //         db.comments = db.comments.filter((comment) => {
+        //             return comment.post_id !== post.id;
+        //         })
+        //     }
 
-            return !match
-        })
+        //     return !match
+        // })
 
-        db.comments = db.comments.filter((comment) => {
-            return comment.author_id !== args.user_id;
-        })
+        // db.comments = db.comments.filter((comment) => {
+        //     return comment.author_id !== args.user_id;
+        // })
 
-        return deletedUsers[0];
+        return deletedUser;
     },
-    updateUser(parent, args, { db }, info) {
-        const {user_id, data} = args
+    async updateUser(parent, args, { UserRepo }, info) {
+        const {user_id, data} = args;
 
-        const user = db.users.find((user) => user.id === user_id);
+        const userCheck = await UserRepo.getUserByID(user_id);
 
-        if (!user) {
+        if (userCheck.length() === 0) {
             throw new Error(`User not found`);
         }
 
         if (typeof data.email === 'string') {
-            const emailTaken = db.users.some((user) => {
-                return user.email.toLowerCase() === data.email.toLowerCase();
-            })
+            const emailCheck = await UserRepo.checkUniqueEamil(data);
 
-            if (emailTaken) {
+            if (emailCheck.length() !== 0) {
                 throw new Error(`An account has already been registered under that email.`)
             }
-
-            user.email = data.email
         }
 
-        if (typeof data.name === 'string') {
-            user.name = data.name
-        }
+        const updatedUser = UserRepo.updateUser(data);
 
-        if (typeof data.age !== 'undefined') {
-            user.age = data.age
-        }
-
-        return user
+        return updatedUser
     }
 };
 

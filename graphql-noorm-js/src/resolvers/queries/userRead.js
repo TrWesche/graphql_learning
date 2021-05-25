@@ -1,12 +1,10 @@
 const resolvers = {
-    users(parent, args, { db }, info) {
+    async users(parent, args, { UserRepo }, info) {
         if (!args.query) {
-            return db.users;
+            return await UserRepo.getAllUsers();
         }
 
-        return db.users.filter((user) => {
-            return user.name.toLowerCase().includes(args.query.toLowerCase());
-        })
+        return await UserRepo.getUsersByName(args.query);
     }
 }
 
