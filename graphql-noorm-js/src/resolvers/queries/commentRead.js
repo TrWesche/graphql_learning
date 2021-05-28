@@ -1,6 +1,6 @@
 const resolvers = {
-    comments(parent, args, { db }, info) {
-        return db.comments;
+    async comments(parent, args, { CommentRepo }, info) {
+        return await CommentRepo.getAllComments();
     }
 }
 

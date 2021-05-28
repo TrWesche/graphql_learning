@@ -1,15 +1,11 @@
 const resolvers = {
     // Field Resolvers
     Post: {
-        author(parent, args, { db }, info) {
-            return db.users.find((user) => {
-                return user.id === parent.author_id;
-            })
+        async author(parent, args, { PostRepo }, info) {
+            return await PostRepo.getPostAuthors(parent.id);
         },
-        comments(parent, args, { db }, info) {
-            return db.comments.filter((comment) => {
-                return comment.post_id === parent.id;
-            })
+        async comments(parent, args, { PostRepo }, info) {
+            return await PostRepo.getPostComments(parent.id);
         }
     }
 }

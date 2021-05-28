@@ -14,10 +14,10 @@ class UserRepo {
         return result.next();
     }
 
-    static async getUsersByName(data) {
+    static async getUsersByName(user_name) {
         let query = aql`
             FOR user IN users
-                FILTER CONTAINS(LOWER(user.name), LOWER(${data}))
+                FILTER CONTAINS(LOWER(user.name), LOWER(${user_name}))
                 LIMIT 100
                 RETURN user
         `;
@@ -28,10 +28,10 @@ class UserRepo {
         return result.next();
     }
 
-    static async getUserByID(data) {
+    static async getUserByID(user_id) {
         let query = aql`
             FOR user IN users
-                FILTER user._key == ${data}
+                FILTER user._key == ${user_id}
                 LIMIT 1
                 RETURN user
         `;
@@ -42,7 +42,6 @@ class UserRepo {
         return result.next()
     }
 
-    
     static async getUserByEmail(data) {
         let query = aql`
             FOR user IN users
@@ -104,6 +103,31 @@ class UserRepo {
         let result = await db.query(query);
         return result.next();
     }
+
+    static async getUserPosts(user_id) {
+        let query = aql`
+            FOR vertex IN OUTBOUND ${ user_id } user_posts
+                RETURN vertex
+        `;
+
+        console.log(query);
+
+        let results = await db.query(query);
+        return results.all();
+    }
+
+    static async getUserComments(user_id) {
+        let query = aql`
+            FOR vertex IN OUTBOUND ${ user_id } user_comments
+                RETURN vertex
+        `;
+
+        console.log(query);
+
+        let results = await db.query(query);
+        return results.all();
+    }
+
 }
 
 export default UserRepo;

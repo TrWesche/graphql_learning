@@ -8,6 +8,7 @@ const { SubscriptionServer } = require('subscriptions-transport-ws');
 
 import schema from './schema';
 import UserRepo from './repositories/user.repo';
+import PostRepo from './repositories/post.repo';
 import CommentRepo from './repositories/comment.repo';
 
 const app = express();
@@ -19,7 +20,8 @@ app.use(
     schema: schema,
     graphiql: true,
     context: { 
-      UserRepo, 
+      UserRepo,
+      PostRepo,
       CommentRepo,
       pubsub }
 }));
