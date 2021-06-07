@@ -1,7 +1,9 @@
 const resolvers = {
     async users(parent, args, { UserRepo }, info) {
         if (!args.query) {
-            return await UserRepo.getAllUsers();
+            const result = await UserRepo.getAllUsers();
+            console.log(result);
+            return result;
         }
 
         return await UserRepo.getUsersByName(args.query);

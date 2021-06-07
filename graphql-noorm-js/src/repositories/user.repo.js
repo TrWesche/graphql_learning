@@ -1,23 +1,21 @@
-import db from '../db';
+import{ default as db, collections } from '../db';
 import { aql } from 'arangojs'
 
 class UserRepo {
     static async getAllUsers() {
         const query = aql`
-            FOR user IN Users
+            FOR user IN ${collections.Users}
                 LIMIT 100
                 RETURN user
         `;
-        console.log(query);
 
-        const result = await db.query(query);
-
-        return result.next();
+        const cursor = await db.query(query);
+        return await cursor.all();
     }
 
     static async getUsersByName(user_name) {
         let query = aql`
-            FOR user IN Users
+            FOR user IN ${collections.Users}
                 FILTER CONTAINS(LOWER(user.name), LOWER(${user_name}))
                 LIMIT 100
                 RETURN user
@@ -25,13 +23,13 @@ class UserRepo {
     
         console.log(query);
 
-        let result = await db.query(query);
-        return result.next();
+        const cursor = await db.query(query);
+        return cursor.all()
     }
 
     static async getUserByID(user_id) {
         let query = aql`
-            FOR user IN Users
+            FOR user IN ${collections.Users}
                 FILTER user._key == ${user_id}
                 LIMIT 1
                 RETURN user
@@ -39,13 +37,13 @@ class UserRepo {
 
         console.log(query);
 
-        let result = await db.query(query);
-        return result.next()
+        const cursor = await db.query(query);
+        return cursor.all()
     }
 
     static async getUserByEmail(data) {
         let query = aql`
-            FOR user IN Users
+            FOR user IN ${collections.Users}
                 FILTER LOWER(user.email) == TRIM(LOWER(${data.email}))
                 LIMIT 1
                 RETURN user
@@ -53,8 +51,8 @@ class UserRepo {
 
         console.log(query);
 
-        let result = await db.query(query);
-        return result.next()
+        const cursor = await db.query(query);
+        return cursor.all()
     }
 
     static async createUser(data) {
@@ -63,14 +61,14 @@ class UserRepo {
                 name: ${data.name},
                 email: TRIM(${data.email}),
                 age: ${data.age ? data.age : null}
-            } INTO Users OPTIONS { keyOptions: "uuid" }
+            } INTO ${collections.Users} OPTIONS { keyOptions: "padded" }
             RETURN NEW
         `;
         
         console.log(query);
 
-        let result = await db.query(query);
-        return result.next();
+        const cursor = await db.query(query);
+        return cursor.all()
     }
 
     static async updateUser(data) {
@@ -83,50 +81,50 @@ class UserRepo {
             UPDATE 
                 {_key: ${data.key}}
             WITH ${updates}
-            IN Users
+            IN ${collections.Users}
             RETURN NEW
         `;
 
         console.log(query);
-        let result = await db.query(query);
-        return result.next();
+        const cursor = await db.query(query);
+        return cursor.all()
     }
  
     static async deleteUser(data) {
         let query = aql`
             REMOVE
                 {_key: ${data.key}}
-            IN Users
+            IN ${collections.Users}
             RETURN OLD
         `;
 
         console.log(query);
-        let result = await db.query(query);
-        return result.next();
+        const cursor = await db.query(query);
+        return cursor.all()
     }
 
     static async getUserPosts(user_id) {
         let query = aql`
-            FOR vertex IN OUTBOUND ${ user_id } UserPosts
+            FOR vertex IN OUTBOUND ${user_id} ${collections.UserPosts}
                 RETURN vertex
         `;
 
         console.log(query);
 
-        let results = await db.query(query);
-        return results.all();
+        const cursor = await db.query(query);
+        return cursor.all()
     }
 
     static async getUserComments(user_id) {
         let query = aql`
-            FOR vertex IN OUTBOUND ${ user_id } UserComments
+            FOR vertex IN OUTBOUND ${user_id} ${collections.UserComments}
                 RETURN vertex
         `;
 
         console.log(query);
 
-        let results = await db.query(query);
-        return results.all();
+        const cursor = await db.query(query);
+        return cursor.all()
     }
 
 }

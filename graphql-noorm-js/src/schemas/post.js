@@ -15,7 +15,7 @@ const typedef = gql`
     }
 
     type Post {
-        id: ID!
+        _id: ID!
         title: String!
         body: String!
         published: Boolean!
