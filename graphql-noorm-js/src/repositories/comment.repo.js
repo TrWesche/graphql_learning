@@ -4,7 +4,7 @@ import { aql } from 'arangojs'
 class CommentRepo {
     static async getAllComments() {
         let query = aql`
-            FOR comment IN comments
+            FOR comment IN Comments
                 LIMIT 100
                 RETURN comment
         `;
@@ -16,7 +16,7 @@ class CommentRepo {
 
     static async getCommentPost(comment_id) {
         let query = aql`
-            FOR vertex IN INBOUND ${ comment_id } post_comments
+            FOR vertex IN INBOUND ${ comment_id } PostComments
                 RETURN vertex
             `;
         let results = await db.query(query);
@@ -25,7 +25,7 @@ class CommentRepo {
 
     static async getCommentAuthor(comment_id) {
         let query = aql`
-            FOR vertex IN INBOUND ${ comment_id } post_authors
+            FOR vertex IN INBOUND ${ comment_id } UserPosts
                 RETURN vertex
             `;
         let results = await db.query(query);

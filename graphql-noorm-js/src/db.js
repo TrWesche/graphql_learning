@@ -1,7 +1,8 @@
 //src/database.js
-import arangojs from 'arangojs'
+import { Database } from 'arangojs'
  
-export const db = arangojs({
-  url: `http://${process.env.ARANGODB_USER}:${process.env.ARANGODB_PASSWORD}@${process.env.ARANGODB_ADDRESS}`,
-  databaseName: 'graphql_lrn'
+export const db = new Database({
+  url: process.env.ARANGODB_ADDRESS,
+  databaseName: process.env.ARANGODB_NAME,
+  auth: {username: process.env.ARANGODB_USER, password: process.env.ARANGODB_PASSWORD}
 })

@@ -3,20 +3,21 @@ import { aql } from 'arangojs'
 
 class UserRepo {
     static async getAllUsers() {
-        let query = aql`
-            FOR user IN users
+        const query = aql`
+            FOR user IN Users
                 LIMIT 100
                 RETURN user
         `;
         console.log(query);
 
-        let result = await db.query(query);
+        const result = await db.query(query);
+
         return result.next();
     }
 
     static async getUsersByName(user_name) {
         let query = aql`
-            FOR user IN users
+            FOR user IN Users
                 FILTER CONTAINS(LOWER(user.name), LOWER(${user_name}))
                 LIMIT 100
                 RETURN user
@@ -30,7 +31,7 @@ class UserRepo {
 
     static async getUserByID(user_id) {
         let query = aql`
-            FOR user IN users
+            FOR user IN Users
                 FILTER user._key == ${user_id}
                 LIMIT 1
                 RETURN user
@@ -44,7 +45,7 @@ class UserRepo {
 
     static async getUserByEmail(data) {
         let query = aql`
-            FOR user IN users
+            FOR user IN Users
                 FILTER LOWER(user.email) == TRIM(LOWER(${data.email}))
                 LIMIT 1
                 RETURN user
@@ -62,7 +63,7 @@ class UserRepo {
                 name: ${data.name},
                 email: TRIM(${data.email}),
                 age: ${data.age ? data.age : null}
-            } INTO users OPTIONS { keyOptions: "uuid" }
+            } INTO Users OPTIONS { keyOptions: "uuid" }
             RETURN NEW
         `;
         
@@ -82,7 +83,7 @@ class UserRepo {
             UPDATE 
                 {_key: ${data.key}}
             WITH ${updates}
-            IN users
+            IN Users
             RETURN NEW
         `;
 
@@ -95,7 +96,7 @@ class UserRepo {
         let query = aql`
             REMOVE
                 {_key: ${data.key}}
-            IN users
+            IN Users
             RETURN OLD
         `;
 
@@ -106,7 +107,7 @@ class UserRepo {
 
     static async getUserPosts(user_id) {
         let query = aql`
-            FOR vertex IN OUTBOUND ${ user_id } user_posts
+            FOR vertex IN OUTBOUND ${ user_id } UserPosts
                 RETURN vertex
         `;
 
@@ -118,7 +119,7 @@ class UserRepo {
 
     static async getUserComments(user_id) {
         let query = aql`
-            FOR vertex IN OUTBOUND ${ user_id } user_comments
+            FOR vertex IN OUTBOUND ${ user_id } UserComments
                 RETURN vertex
         `;
 

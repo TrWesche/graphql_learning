@@ -1,0 +1,101 @@
+LET userCores = [
+    {name: 'Trent', email: 'trent@example.com', age: 32},
+    {name: 'Camille', email: 'camille@example.com'},
+    {name: 'Zoltar', email: 'zoltar@example.com', age: 1000}
+]
+
+FOR userCore IN userCores
+    INSERT userCore INTO Users OPTIONS { keyOptions: { type: "padded" }, waitForSync: true}
+
+
+LET postCores = [
+    {title: 'My First Post', body: 'Body of the first post', published: true},
+    {title: 'My Second Post', body: 'Body of the second post', published: true},
+    {title: 'My Third Post', body: 'Body of the third post', published: false},
+    {title: 'My Fourth Upload', body: 'This is the text for the fourth upload', published: true}
+]
+
+FOR postCore in postCores
+    INSERT postCore INTO Posts OPTIONS { keyOptions: { type: "padded" }, waitForSync: true}
+
+
+LET userPostVertex = [
+    {_from: 'Trent', _to: 'My First Post'},
+    {_from: 'Camille', _to: 'My Second Post'},
+    {_from: 'Trent', _to: 'My Third Post'},
+    {_from: 'Zoltar', _to: 'My Fourth Upload'}
+]
+
+FOR upVertex in userPostVertex
+    LET fromValue = (
+        FOR user in Users
+            FILTER user.name == upVertex._from
+            RETURN user
+    )
+
+    LET toValue = (
+        FOR post in Posts
+            FILTER post.title == upVertex._to
+            RETURN post
+    )
+
+    INSERT {_from: fromValue[0]._id, _to: toValue[0]._id} INTO UserPosts
+
+
+LET commentCores = [
+    {text: 'This is the first comment on post 1 - comment1'},
+    {text: 'This is the second comment on post 1 - comment2'},
+    {text: 'This is the first comment on post 3 - comment3'},
+    {text: 'This is the first comment on post 4 - comment4'}
+]
+
+FOR commentCore IN commentCores
+    INSERT commentCore INTO Comments OPTIONS { keyOptions: { type: "padded" }, waitForSync: true}
+
+
+
+LET userCommentVertex = [
+    {_from: 'Camille', _to: '%comment1'}, 
+    {_from: 'Zoltar', _to: '%comment2'}, 
+    {_from: 'Camille', _to: '%comment3'}, 
+    {_from: 'Trent', _to: '%comment4'}
+]
+
+FOR ucVertex in userCommentVertex
+    LET fromValue = (
+        FOR user in Users
+            FILTER user.name == ucVertex._from
+            RETURN user
+    )
+
+    LET toValue = (
+        FOR comment in Comments
+            FILTER comment.text LIKE ucVertex._to
+            RETURN comment
+    )
+
+    INSERT {_from: fromValue[0]._id, _to: toValue[0]._id} INTO UserComments
+
+
+
+LET postCommentVertex = [
+    {_from: 'My First Post', _to: '%comment1'},
+    {_from: 'My First Post', _to: '%comment2'},
+    {_from: 'My Third Post', _to: '%comment3'},
+    {_from: 'My Fourth Upload', _to: '%comment4'}
+]
+
+FOR pcVertex in postCommentVertex
+    LET fromValue = (
+        FOR post in Posts
+            FILTER post.title == pcVertex._from
+            RETURN post
+    )
+
+    LET toValue = (
+        FOR comment in Comments
+            FILTER comment.text LIKE pcVertex._to
+            RETURN comment
+    )
+
+    INSERT {_from: fromValue[0]._id, _to: toValue[0]._id} INTO PostComments

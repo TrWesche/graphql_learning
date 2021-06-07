@@ -4,7 +4,7 @@ import { aql } from 'arangojs'
 class PostRepo {
     static async getAllPosts() {
         let query = aql`
-            FOR post IN posts
+            FOR post IN Posts
                 LIMIT 100
                 RETURN post
         `;
@@ -16,7 +16,7 @@ class PostRepo {
 
     static async getPostByID(post_id) {
         let query = aql`
-            FOR post IN posts
+            FOR post IN Posts
                 FILTER post._key == ${post_id}
                 LIMIT 1
                 RETURN post
@@ -30,7 +30,7 @@ class PostRepo {
 
     static async getPostComments(post_id) {
         let query = aql`
-            FOR vertex IN OUTBOUND ${ post_id } post_comments
+            FOR vertex IN OUTBOUND ${ post_id } PostComments
                 RETURN vertex
         `;
 
@@ -42,7 +42,7 @@ class PostRepo {
 
     static async getPostAuthors(post_id) {
         let query = aql`
-            FOR vertex IN INBOUND ${ post_id } user_posts
+            FOR vertex IN INBOUND ${ post_id } UserPosts
                 RETURN vertex
         `;
 
