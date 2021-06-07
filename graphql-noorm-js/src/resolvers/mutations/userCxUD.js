@@ -1,16 +1,16 @@
-import { v4 as uuidV4 } from "uuid";
+// import { v4 as uuidV4 } from "uuid";
 
 const resolvers = {
     async createUser(parent, args, { UserRepo }, info) {
-        const emailCheck = await UserRepo.checkUniqueEamil(args.data);
+        const emailCheck = await UserRepo.getUserByEmail(args.data.email);
 
-        if (emailCheck.length() !== 0) {
+        if (emailCheck.length !== 0) {
             throw new Error(`An account has already been registered under that email.`)
         }
 
-        const user = UserRepo.createUser(args.data);
+        const users = await UserRepo.createUser(args.data);
 
-        return user;
+        return users[0];
     },
     async deleteUser(parent, args, { UserRepo }, info) {
         const userCheck = await UserRepo.getUserByID(args.user_id);

@@ -2,6 +2,7 @@ import{ default as db, collections } from '../db';
 import { aql } from 'arangojs'
 
 class UserRepo {
+    // Manually Checked - OK (6/7/2021)
     static async getAllUsers() {
         const query = aql`
             FOR user IN ${collections.Users}
@@ -13,59 +14,55 @@ class UserRepo {
         return await cursor.all();
     }
 
-    static async getUsersByName(user_name) {
+    // Manually Checked - OK (6/7/2021)
+    static async getUsersByName(data) {
         let query = aql`
             FOR user IN ${collections.Users}
-                FILTER CONTAINS(LOWER(user.name), LOWER(${user_name}))
+                FILTER CONTAINS(LOWER(user.name), LOWER(${data}))
                 LIMIT 100
                 RETURN user
         `;
-    
-        console.log(query);
 
         const cursor = await db.query(query);
         return cursor.all()
     }
 
-    static async getUserByID(user_id) {
+    // Manually Checked - OK (6/7/2021)
+    static async getUserByID(data) {
         let query = aql`
             FOR user IN ${collections.Users}
-                FILTER user._key == ${user_id}
+                FILTER user._id == ${data}
                 LIMIT 1
                 RETURN user
         `;
 
-        console.log(query);
-
         const cursor = await db.query(query);
         return cursor.all()
     }
 
+    // Manually Checked - OK (6/7/2021)
     static async getUserByEmail(data) {
         let query = aql`
             FOR user IN ${collections.Users}
-                FILTER LOWER(user.email) == TRIM(LOWER(${data.email}))
+                FILTER LOWER(user.email) == TRIM(LOWER(${data}))
                 LIMIT 1
                 RETURN user
         `;
-
-        console.log(query);
 
         const cursor = await db.query(query);
         return cursor.all()
     }
 
+    // Manually Checked - OK (6/7/2021)
     static async createUser(data) {
         let query = aql`
             INSERT {
                 name: ${data.name},
                 email: TRIM(${data.email}),
                 age: ${data.age ? data.age : null}
-            } INTO ${collections.Users} OPTIONS { keyOptions: "padded" }
+            } INTO ${collections.Users} OPTIONS { keyOptions: { type: "padded" } }
             RETURN NEW
         `;
-        
-        console.log(query);
 
         const cursor = await db.query(query);
         return cursor.all()
