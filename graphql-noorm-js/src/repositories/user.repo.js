@@ -103,15 +103,15 @@ class UserRepo {
         return cursor.all()
     }
  
-    static async deleteUser(data) {
+    // Manually Checked - OK (6/7/2021)
+    static async deleteUser(user_id) {
         let query = aql`
-            REMOVE
-                {_id: ${data}}
+            LET key = PARSE_IDENTIFIER(${user_id}).key
+            REMOVE key
             IN ${collections.Users}
             RETURN OLD
         `;
 
-        console.log(query);
         const cursor = await db.query(query);
         return cursor.all()
     }

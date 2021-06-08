@@ -12,34 +12,6 @@ const resolvers = {
 
         return users[0];
     },
-    async deleteUser(parent, args, { UserRepo }, info) {
-        const userCheck = await UserRepo.getUserByID(args.user_id);
-
-        if (userCheck.length === 0) {
-            throw new Error(`User not found`);
-        }
-
-        const deletedUser = await UserRepo.deleteUser(args.user_id);
-
-        // TODO: Need to re-implement this with queries
-        // db.posts = db.posts.filter((post) => {
-        //     const match = post.author_id === args.user_id;
-
-        //     if (match) {
-        //         db.comments = db.comments.filter((comment) => {
-        //             return comment.post_id !== post.id;
-        //         })
-        //     }
-
-        //     return !match
-        // })
-
-        // db.comments = db.comments.filter((comment) => {
-        //     return comment.author_id !== args.user_id;
-        // })
-
-        return deletedUser;
-    },
     async updateUser(parent, args, { UserRepo }, info) {
         const {user_id, data} = args;
 
@@ -59,6 +31,34 @@ const resolvers = {
 
         const updatedUsers = await UserRepo.updateUser(user_id, data);
         return updatedUsers[0];
+    },
+    async deleteUser(parent, args, { UserRepo }, info) {
+        const userCheck = await UserRepo.getUserByID(args.user_id);
+
+        if (userCheck.length === 0) {
+            throw new Error(`User not found`);
+        }
+
+        const deletedUsers = await UserRepo.deleteUser(args.user_id);
+
+        // TODO: Need to re-implement this with queries
+        // db.posts = db.posts.filter((post) => {
+        //     const match = post.author_id === args.user_id;
+
+        //     if (match) {
+        //         db.comments = db.comments.filter((comment) => {
+        //             return comment.post_id !== post.id;
+        //         })
+        //     }
+
+        //     return !match
+        // })
+
+        // db.comments = db.comments.filter((comment) => {
+        //     return comment.author_id !== args.user_id;
+        // })
+
+        return deletedUsers[0];
     }
 };
 
