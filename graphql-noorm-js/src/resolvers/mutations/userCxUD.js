@@ -15,11 +15,11 @@ const resolvers = {
     async deleteUser(parent, args, { UserRepo }, info) {
         const userCheck = await UserRepo.getUserByID(args.user_id);
 
-        if (userCheck.length() === 0) {
+        if (userCheck.length === 0) {
             throw new Error(`User not found`);
         }
 
-        const deletedUser = UserRepo.deleteUser(args.user_id);
+        const deletedUser = await UserRepo.deleteUser(args.user_id);
 
         // TODO: Need to re-implement this with queries
         // db.posts = db.posts.filter((post) => {
@@ -45,21 +45,20 @@ const resolvers = {
 
         const userCheck = await UserRepo.getUserByID(user_id);
 
-        if (userCheck.length() === 0) {
+        if (userCheck.length === 0) {
             throw new Error(`User not found`);
         }
 
         if (typeof data.email === 'string') {
-            const emailCheck = await UserRepo.checkUniqueEamil(data);
+            const emailCheck = await UserRepo.getUserByEmail(data.email);
 
-            if (emailCheck.length() !== 0) {
+            if (emailCheck.length !== 0) {
                 throw new Error(`An account has already been registered under that email.`)
             }
         }
 
-        const updatedUser = UserRepo.updateUser(data);
-
-        return updatedUser
+        const updatedUsers = await UserRepo.updateUser(user_id, data);
+        return updatedUsers[0];
     }
 };
 

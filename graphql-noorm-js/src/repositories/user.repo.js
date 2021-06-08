@@ -68,21 +68,37 @@ class UserRepo {
         return cursor.all()
     }
 
-    static async updateUser(data) {
-        const updates = JSON.stringify(data);
+    // Manually Checked - OK (6/7/2021)
+    static async updateUser(user_id, data) {
+        // No Updates
+        if (!data.name && !data.age && !data.email) {
+            let query = aql`
+                FOR user IN ${collections.Users}
+                    FILTER user._id == ${user_id}
+                    LIMIT 1
+                    RETURN user
+            `;
 
-        // Check to see what the JSON.stringify is creating to make sure it make sense
-        console.log(updates);
+            const cursor = await db.query(query);
+            return cursor.all()
+        }
+
+        const updateValues = [];
+
+        if (data.name !== undefined) {updateValues.push(aql`name: ${data.name}`)};
+
+        if (data.age !== undefined) {updateValues.push(aql`age: ${data.age}`)};
+
+        if (data.email !== undefined) {updateValues.push(aql`email: ${data.email}`)};
 
         let query = aql`
-            UPDATE 
-                {_key: ${data.key}}
-            WITH ${updates}
+            LET key = PARSE_IDENTIFIER(${user_id}).key
+            UPDATE key
+            WITH {${aql.join(updateValues, " ,")}}
             IN ${collections.Users}
             RETURN NEW
         `;
 
-        console.log(query);
         const cursor = await db.query(query);
         return cursor.all()
     }
@@ -90,7 +106,7 @@ class UserRepo {
     static async deleteUser(data) {
         let query = aql`
             REMOVE
-                {_key: ${data.key}}
+                {_id: ${data}}
             IN ${collections.Users}
             RETURN OLD
         `;
