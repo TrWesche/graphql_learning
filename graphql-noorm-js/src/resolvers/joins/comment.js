@@ -2,10 +2,12 @@ const resolvers = {
     // Field Resolvers
     Comment: {
         async author(parent, args, { CommentRepo }, info) {
-            return await CommentRepo.getCommentAuthor(parent.id);
+            const result = await CommentRepo.getCommentAuthor(parent);
+            return result[0];
         },
         async post(parent, args, { CommentRepo }, info) {
-            return await CommentRepo.getCommentPost(parent.id);
+            const result = await CommentRepo.getCommentPost(parent);
+            return result[0];
         }
     }
 }

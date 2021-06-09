@@ -9,7 +9,6 @@ const resolvers = {
         }
 
         const users = await UserRepo.createUser(args.data);
-
         return users[0];
     },
     async updateUser(parent, args, { UserRepo }, info) {

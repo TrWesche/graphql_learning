@@ -1,38 +1,40 @@
-import db from '../db';
+import {default as db, collections } from '../db';
 import { aql } from 'arangojs'
 
 class CommentRepo {
+    // Manually Checked - OK (6/8/2021)
     static async getAllComments() {
         let query = aql`
-            FOR comment IN Comments
+            FOR comment IN ${collections.Comments}
                 LIMIT 100
                 RETURN comment
         `;
-        console.log(query);
 
-        let result = await db.query(query);
-        return result.next();
+        const cursor = await db.query(query);
+        return await cursor.all();
     }
 
-    static async getCommentPost(comment_id) {
+    // Manually Checked - OK (6/8/2021)
+    static async getCommentPost(parent) {
         let query = aql`
-            FOR vertex IN INBOUND ${ comment_id } PostComments
-                RETURN vertex
-            `;
-        let results = await db.query(query);
-        return results.all();
+            FOR v IN 1..1 INBOUND ${parent} ${collections.PostComments}
+                RETURN v
+        `;
+
+        const cursor = await db.query(query);
+        return await cursor.all();
     }
 
-    static async getCommentAuthor(comment_id) {
+    // Manually Checked - OK (6/8/2021)
+    static async getCommentAuthor(parent) {
         let query = aql`
-            FOR vertex IN INBOUND ${ comment_id } UserPosts
-                RETURN vertex
+            FOR v IN 1..1 INBOUND ${parent} ${collections.UserComments}
+                RETURN v
             `;
-        let results = await db.query(query);
-        return results.all();
+        
+        const cursor = await db.query(query);
+        return await cursor.all();
     }
-    
-
 }
 
 export default CommentRepo;

@@ -10,7 +10,6 @@ class UserRepo {
                 RETURN user
         `;
 
-        console.log("Hit Get All Users")
         const cursor = await db.query(query);
         return await cursor.all();
     }
