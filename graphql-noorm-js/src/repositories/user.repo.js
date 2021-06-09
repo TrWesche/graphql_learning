@@ -10,6 +10,7 @@ class UserRepo {
                 RETURN user
         `;
 
+        console.log("Hit Get All Users")
         const cursor = await db.query(query);
         return await cursor.all();
     }
@@ -116,25 +117,23 @@ class UserRepo {
         return cursor.all()
     }
 
-    static async getUserPosts(user_id) {
+    // Manually Checked - OK (6/8/2021)
+    static async getUserPosts(parent) {
         let query = aql`
-            FOR vertex IN OUTBOUND ${user_id} ${collections.UserPosts}
-                RETURN vertex
+            FOR v IN 1..1 OUTBOUND ${parent} ${collections.UserPosts}
+                RETURN v
         `;
-
-        console.log(query);
 
         const cursor = await db.query(query);
         return cursor.all()
     }
 
-    static async getUserComments(user_id) {
+    // Manually Checked - OK (6/8/2021)
+    static async getUserComments(parent) {
         let query = aql`
-            FOR vertex IN OUTBOUND ${user_id} ${collections.UserComments}
-                RETURN vertex
+            FOR v IN 1..1 OUTBOUND ${parent} ${collections.UserComments}
+                RETURN v
         `;
-
-        console.log(query);
 
         const cursor = await db.query(query);
         return cursor.all()
