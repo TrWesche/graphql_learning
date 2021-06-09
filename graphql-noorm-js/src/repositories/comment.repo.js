@@ -56,9 +56,9 @@ class CommentRepo {
             LET newComment = NEW
 
             INSERT {
-                _from: data.user_id,
+                _from: ${data.user_id},
                 _to: NEW._id
-            } INTO ${collections.UserComments} OPTIONS { keyOptions: { type: "padded" } }
+            } INTO ${collections.UserComments}
             
             RETURN newComment
         `;

@@ -1,29 +1,13 @@
 const resolvers = {
-    posts(parent, args, { db }, info) {
-        if (!args.query && !args.hasOwnProperty("publish_status")) {
-            return db.posts;
+    posts(parent, args, ctx, info) {
+        const { PostRepo } = ctx;
+        const { query, publish_status } = args;
+
+        if (!query && publish_status === undefined) {
+            return await PostRepo.getAllPosts();
         }
 
-        let processingArray = db.posts;
-        if (args.hasOwnProperty("publish_status")) {
-            processingArray = processingArray.filter((post) => {
-                return post.published === args.publish_status;
-            })
-        }
-
-        if (args.query) {
-            processingArray = processingArray.filter((post) => {
-                let titleSearchResult = post.title.toLowerCase().includes(args.query.toLowerCase());
-
-                if (titleSearchResult) {
-                    return titleSearchResult;
-                }
-
-                return post.body.toLowerCase().includes(args.query.toLowerCase());
-            })
-        }
-
-        return processingArray;
+        return await PostRepo.getFilteredPosts(publish_status, query);
     }
 };
 

@@ -16,7 +16,7 @@ class UserRepo {
 
     // Manually Checked - OK (6/7/2021)
     static async getUsersByName(data) {
-        let query = aql`
+        const query = aql`
             FOR user IN ${collections.Users}
                 FILTER CONTAINS(LOWER(user.name), LOWER(${data}))
                 LIMIT 100
@@ -24,12 +24,12 @@ class UserRepo {
         `;
 
         const cursor = await db.query(query);
-        return cursor.all()
+        return cursor.all();
     }
 
     // Manually Checked - OK (6/7/2021)
     static async getUserByID(data) {
-        let query = aql`
+        const query = aql`
             FOR user IN ${collections.Users}
                 FILTER user._id == ${data}
                 LIMIT 1
@@ -37,12 +37,12 @@ class UserRepo {
         `;
 
         const cursor = await db.query(query);
-        return cursor.all()
+        return cursor.all();
     }
 
     // Manually Checked - OK (6/7/2021)
     static async getUserByEmail(data) {
-        let query = aql`
+        const query = aql`
             FOR user IN ${collections.Users}
                 FILTER LOWER(user.email) == TRIM(LOWER(${data}))
                 LIMIT 1
@@ -50,12 +50,12 @@ class UserRepo {
         `;
 
         const cursor = await db.query(query);
-        return cursor.all()
+        return cursor.all();
     }
 
     // Manually Checked - OK (6/7/2021)
     static async createUser(data) {
-        let query = aql`
+        const query = aql`
             INSERT {
                 name: ${data.name},
                 email: TRIM(${data.email}),
@@ -72,7 +72,7 @@ class UserRepo {
     static async updateUser(user_id, data) {
         // No Updates
         if (!data.name && !data.age && !data.email) {
-            let query = aql`
+            const query = aql`
                 FOR user IN ${collections.Users}
                     FILTER user._id == ${user_id}
                     LIMIT 1
@@ -91,7 +91,7 @@ class UserRepo {
 
         if (data.email !== undefined) {updateValues.push(aql`email: ${data.email}`)};
 
-        let query = aql`
+        const query = aql`
             LET key = PARSE_IDENTIFIER(${user_id}).key
             UPDATE key
             WITH {${aql.join(updateValues, " ,")}}
@@ -100,12 +100,12 @@ class UserRepo {
         `;
 
         const cursor = await db.query(query);
-        return cursor.all()
+        return cursor.all();
     }
  
     // Manually Checked - OK (6/7/2021)
     static async deleteUser(user_id) {
-        let query = aql`
+        const query = aql`
             LET key = PARSE_IDENTIFIER(${user_id}).key
             REMOVE key
             IN ${collections.Users}
@@ -113,29 +113,29 @@ class UserRepo {
         `;
 
         const cursor = await db.query(query);
-        return cursor.all()
+        return cursor.all();
     }
 
     // Manually Checked - OK (6/8/2021)
     static async getUserPosts(parent) {
-        let query = aql`
+        const query = aql`
             FOR v IN 1..1 OUTBOUND ${parent} ${collections.UserPosts}
                 RETURN v
         `;
 
         const cursor = await db.query(query);
-        return cursor.all()
+        return cursor.all();
     }
 
     // Manually Checked - OK (6/8/2021)
     static async getUserComments(parent) {
-        let query = aql`
+        const query = aql`
             FOR v IN 1..1 OUTBOUND ${parent} ${collections.UserComments}
                 RETURN v
         `;
 
         const cursor = await db.query(query);
-        return cursor.all()
+        return cursor.all();
     }
 
 }
