@@ -65,7 +65,7 @@ class UserRepo {
         `;
 
         const cursor = await db.query(query);
-        return cursor.all()
+        return cursor.all();
     }
 
     // Manually Checked - OK (6/7/2021)

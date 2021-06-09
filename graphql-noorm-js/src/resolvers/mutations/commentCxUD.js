@@ -1,77 +1,44 @@
-import { v4 as uuidV4 } from "uuid";
-
 const resolvers = {
-    createComment(parent, args, { db, pubsub }, info) {
-        const userExists = db.users.some((user) => {
-            return user.id === args.data.author_id;
-        })
-
-        if (!userExists) {
+    async createComment(parent, args, { CommentRepo, UserRepo, PostRepo }, info) {
+        const {user_id, post_id, data} = args;
+        
+        const userCheck = await UserRepo.getUserByID(user_id);
+        if (userCheck.length === 0) {
             throw new Error(`User not found.`)
         }
 
-        const postValid = db.posts.some((post) => {
-            return post.id === args.data.post_id && post.published;
-        })
-
-        if (!postValid) {
-            throw new Error(`Could not find target post.`)
+        const postCheck = await PostRepo.getPostByID(post_id);
+        if (postCheck.length === 0 || !postCheck[0].published) {
+            throw new Error(`Count not find target post.`)
         }
 
-        const comment = {
-            id: uuidV4(),
-            ...args.data
-        }
-
-        db.comments.push(comment);
-        pubsub.publish(`comment:${args.data.post_id}`, { 
-            comment: {
-                mutation: "CREATED",
-                data: comment
-            }
-        })
-
-        return comment;
+        const comments = await CommentRepo.createComment(data);
+        return comments[0];
     },
-    updateComment(parent, args, { db, pubsub }, info) {
+    async updateComment(parent, args, { CommentRepo }, info) {
         const {comment_id, data} = args;
 
-        const comment = db.comments.find(comment => comment.id === comment_id);
+        const commentCheck = await CommentRepo.getCommentByID(comment_id);
 
-        if (!comment) {
+        if (commentCheck.length === 0) {
             throw new Error(`Comment not found`)
         }
 
-        if (typeof data.text === 'string') {
-            comment.text = data.text;
-        }
-
-        pubsub.publish(`comment:${comment.post_id}`, { 
-            comment: {
-                mutation: "UPDATED",
-                data: comment
-            }
-        })
-
-        return comment;
+        const updatedComments = await CommentRepo.updateComment(comment_id, data);
+        return updatedComments[0];
     },
-    deleteComment(parent, args, { db, pubsub }, info) {
-        const commentIndex = db.comments.findIndex(comment => comment.id === args.comment_id);
+    async deleteComment(parent, args, ctx, info) {
+        const {CommentRepo} = ctx;
+        const {comment_id} = args;
 
-        if (commentIndex === -1) {
-            throw new Error(`Comment not found`);
+        const commentCheck = await CommentRepo.getCommentByID(comment_id);
+
+        if (commentCheck.length === 0) {
+            throw new Error(`Comment not found`)
         }
 
-        const [comment] = db.comments.splice(commentIndex, 1);
-
-        pubsub.publish(`comment:${comment.post_id}`, { 
-            comment: {
-                mutation: "DELETED",
-                data: comment
-            }
-        })
-
-        return comment;
+        const deletedComments = await CommentRepo.deleteComment(comment_id);
+        return deletedComments[0];
     }
 }
 
