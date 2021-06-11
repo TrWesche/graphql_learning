@@ -2,6 +2,31 @@ import {default as db, collections } from '../db';
 import { aql } from 'arangojs'
 
 class CommentRepo {
+    // Manually Checked - OK (6/10/2021)
+    static async createComment(data) {
+        const query = aql`
+            INSERT {
+                text: ${data.text}
+            } INTO ${collections.Comments} OPTIONS { keyOptions: { type: "padded" } }
+            LET newComment = NEW
+
+            INSERT {
+                _from: ${data.author_id},
+                _to: newComment._id
+            } INTO ${collections.UserComments}
+            
+            INSERT {
+                _from: ${data.post_id},
+                _to: newComment._id
+            } INTO ${collections.PostComments}
+
+            RETURN newComment
+        `;
+
+        const cursor = await db.query(query);
+        return cursor.all();
+    }
+
     // Manually Checked - OK (6/8/2021)
     static async getAllComments() {
         let query = aql`
@@ -14,6 +39,7 @@ class CommentRepo {
         return await cursor.all();
     }
 
+    // Manually Checked - OK (6/10/2021)
     static async getCommentByID(data) {
         let query = aql`
             FOR comment IN ${collections.Comments}
@@ -26,47 +52,7 @@ class CommentRepo {
         return cursor.all()
     }
 
-    // Manually Checked - OK (6/8/2021)
-    static async getCommentPost(parent) {
-        let query = aql`
-            FOR v IN 1..1 INBOUND ${parent} ${collections.PostComments}
-                RETURN v
-        `;
-
-        const cursor = await db.query(query);
-        return await cursor.all();
-    }
-
-    // Manually Checked - OK (6/8/2021)
-    static async getCommentAuthor(parent) {
-        let query = aql`
-            FOR v IN 1..1 INBOUND ${parent} ${collections.UserComments}
-                RETURN v
-            `;
-        
-        const cursor = await db.query(query);
-        return await cursor.all();
-    }
-
-    static async createComment(data) {
-        const query = aql`
-            INSERT {
-                text: ${data.text}
-            } INTO ${collections.Comments} OPTIONS { keyOptions: { type: "padded" } }
-            LET newComment = NEW
-
-            INSERT {
-                _from: ${data.user_id},
-                _to: NEW._id
-            } INTO ${collections.UserComments}
-            
-            RETURN newComment
-        `;
-
-        const cursor = await db.query(query);
-        return cursor.all();
-    }
-
+    // Manually Checked - OK (6/10/2021)
     static async updateComment(comment_id, data) {
         // No Updates
         if (!data.text) {
@@ -97,8 +83,19 @@ class CommentRepo {
         return cursor.all()
     }
 
+    // Manually Checked - OK (6/10/2021)
     static async deleteComment(comment_id) {
-        let query = aql`
+        const query = aql`
+            LET edgeKeys = (
+                FOR v, e IN 1..1 ANY ${comment_id} GRAPH ${collections.commentRelationshipsGraph._name}
+                RETURN e._key
+            )
+            
+            LET r = (FOR edgeKey IN edgeKeys 
+                REMOVE edgeKey IN ${collections.UserComments} OPTIONS { ignoreErrors: true }
+                REMOVE edgeKey IN ${collections.PostComments} OPTIONS { ignoreErrors: true }
+            ) 
+
             LET key = PARSE_IDENTIFIER(${comment_id}).key
             REMOVE key
             IN ${collections.Comments}
@@ -107,6 +104,28 @@ class CommentRepo {
 
         const cursor = await db.query(query);
         return cursor.all()   
+    }
+
+    // Manually Checked - OK (6/8/2021)
+    static async getCommentPost(parent) {
+        let query = aql`
+            FOR v IN 1..1 INBOUND ${parent} ${collections.PostComments}
+                RETURN v
+        `;
+
+        const cursor = await db.query(query);
+        return await cursor.all();
+    }
+
+    // Manually Checked - OK (6/8/2021)
+    static async getCommentAuthor(parent) {
+        let query = aql`
+            FOR v IN 1..1 INBOUND ${parent} ${collections.UserComments}
+                RETURN v
+            `;
+        
+        const cursor = await db.query(query);
+        return await cursor.all();
     }
 }
 

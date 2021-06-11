@@ -1,14 +1,14 @@
 const resolvers = {
     async createComment(parent, args, ctx, info) {
         const { CommentRepo, UserRepo, PostRepo } = ctx;
-        const { user_id, post_id, data } = args;
+        const { data } = args;
         
-        const userCheck = await UserRepo.getUserByID(user_id);
+        const userCheck = await UserRepo.getUserByID(data.author_id);
         if (userCheck.length === 0) {
             throw new Error(`User not found.`)
         }
 
-        const postCheck = await PostRepo.getPostByID(post_id);
+        const postCheck = await PostRepo.getPostByID(data.post_id);
         if (postCheck.length === 0 || !postCheck[0].published) {
             throw new Error(`Count not find target post.`)
         }
@@ -30,8 +30,8 @@ const resolvers = {
         return updatedComments[0];
     },
     async deleteComment(parent, args, ctx, info) {
-        const {CommentRepo} = ctx;
-        const {comment_id} = args;
+        const { CommentRepo } = ctx;
+        const { comment_id } = args;
 
         const commentCheck = await CommentRepo.getCommentByID(comment_id);
 

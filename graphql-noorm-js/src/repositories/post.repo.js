@@ -14,7 +14,7 @@ class PostRepo {
 
             INSERT {
                 _from: ${data.author_id},
-                _to: NEW._id
+                _to: newPost._id
             } INTO ${collections.UserPosts}
             RETURN newPost
         `;
