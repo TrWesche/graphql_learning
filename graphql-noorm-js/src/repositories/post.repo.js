@@ -2,7 +2,8 @@ import {default as db, collections} from '../db';
 import { aql } from 'arangojs'
 
 class PostRepo {
-    static async createPost(user_id, data) {
+    // Manually Checked - OK (6/10/2021)
+    static async createPost(data) {
         const query = aql`
             INSERT {
                 title: ${data.title},
@@ -12,7 +13,7 @@ class PostRepo {
             let newPost = NEW
 
             INSERT {
-                _from: ${user_id},
+                _from: ${data.author_id},
                 _to: NEW._id
             } INTO ${collections.UserPosts}
             RETURN newPost
@@ -22,6 +23,7 @@ class PostRepo {
         return cursor.all();
     }
 
+    // Manually Checked - OK (6/10/2021)
     static async getAllPosts() {
         const query = aql`
             FOR post IN ${collections.Posts}
@@ -33,6 +35,7 @@ class PostRepo {
         return await cursor.all();
     }
 
+    // Manually Checked - OK (6/10/2021)
     static async getPostByID(data) {
         const query = aql`
             FOR post IN ${collections.Posts}
@@ -45,12 +48,13 @@ class PostRepo {
         return cursor.all();
     }
 
-    static async getFilteredPosts(publish_status, query) {
+    // Manually Checked - OK (6/10/2021)
+    static async getFilteredPosts(publishStatus, searchString) {
         const queryParams = [];
 
-        if (publish_status !== undefined) {queryParams.push(aql`FILTER post.published === ${publish_status}`)};
+        if (publishStatus !== undefined) {queryParams.push(aql`FILTER post.published == ${publishStatus}`)};
 
-        if (query !== undefined) {queryParams.push(aql`FILER LIKE(post.body, ${'%'+data.body+'%'}, true)`)};
+        if (searchString !== undefined) {queryParams.push(aql`FILTER LIKE(post.body, ${'%'+searchString+'%'}, true)`)};
 
         const query = aql`
             FOR post IN ${collections.Posts}
@@ -62,6 +66,7 @@ class PostRepo {
         return cursor.all();
     }
 
+    // Manually Checked - OK (6/10/2021)
     static async updatePost(post_id, data) {
         // No Updates
         if (!data.title && !data.body && !data.published) {
@@ -96,8 +101,20 @@ class PostRepo {
         return cursor.all();
     }
  
+    
     static async deletePost(post_id) {
+        // Manually Checked - OK (6/10/2021)
         const query = aql`
+            LET edgeKeys = (
+                FOR v, e IN 1..1 ANY ${post_id} GRAPH ${collections.postRelationshipsGraph._name}
+                RETURN e._key
+            )
+            
+            LET r = (FOR edgeKey IN edgeKeys 
+                REMOVE edgeKey IN ${collections.UserPosts} OPTIONS { ignoreErrors: true }
+                REMOVE edgeKey IN ${collections.PostComments} OPTIONS { ignoreErrors: true }
+            ) 
+
             LET key = PARSE_IDENTIFIER(${post_id}).key
             REMOVE key
             IN ${collections.Posts}

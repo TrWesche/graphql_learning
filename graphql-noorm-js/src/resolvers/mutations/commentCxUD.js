@@ -1,6 +1,7 @@
 const resolvers = {
-    async createComment(parent, args, { CommentRepo, UserRepo, PostRepo }, info) {
-        const {user_id, post_id, data} = args;
+    async createComment(parent, args, ctx, info) {
+        const { CommentRepo, UserRepo, PostRepo } = ctx;
+        const { user_id, post_id, data } = args;
         
         const userCheck = await UserRepo.getUserByID(user_id);
         if (userCheck.length === 0) {
@@ -15,8 +16,9 @@ const resolvers = {
         const comments = await CommentRepo.createComment(data);
         return comments[0];
     },
-    async updateComment(parent, args, { CommentRepo }, info) {
-        const {comment_id, data} = args;
+    async updateComment(parent, args, ctx, info) {
+        const { CommentRepo } = ctx;
+        const { comment_id, data } = args;
 
         const commentCheck = await CommentRepo.getCommentByID(comment_id);
 

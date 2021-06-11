@@ -21,7 +21,7 @@ const db = new Database({
   auth: {username: "root", password: "graphqlandarangodb"}
 })
 
-
+db.graph
 // Define Database Collections
 // Document Collections
 const collections = {
@@ -32,7 +32,9 @@ const collections = {
   // Edge Collections
   UserPosts: db.collection("UserPosts"),
   UserComments: db.collection("UserComments"),
-  PostComments: db.collection("PostComments")
+  PostComments: db.collection("PostComments"),
+  // Graphs
+  postRelationshipsGraph: db.graph("postRelationshipsGraph")
 }
 
 

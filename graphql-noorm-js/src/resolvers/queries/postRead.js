@@ -1,5 +1,5 @@
 const resolvers = {
-    posts(parent, args, ctx, info) {
+    async posts(parent, args, ctx, info) {
         const { PostRepo } = ctx;
         const { query, publish_status } = args;
 
