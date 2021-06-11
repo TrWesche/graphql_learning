@@ -101,9 +101,8 @@ class PostRepo {
         return cursor.all();
     }
  
-    
+    // Manually Checked - OK (6/10/2021)
     static async deletePost(post_id) {
-        // Manually Checked - OK (6/10/2021)
         const query = aql`
             LET edgeKeys = (
                 FOR v, e IN 1..1 ANY ${post_id} GRAPH ${collections.postRelationshipsGraph._name}
@@ -125,6 +124,7 @@ class PostRepo {
         return cursor.all();
     }
 
+    // Manually Checked - OK (6/10/2021)
     static async getPostComments(parent) {
         const query = aql`
             FOR v IN 1..1 OUTBOUND ${parent} ${collections.PostComments}
@@ -135,6 +135,7 @@ class PostRepo {
         return cursor.all();
     }
 
+    // Manually Checked - OK (6/10/2021)
     static async getPostAuthors(parent) {
         const query = aql`
             FOR v IN 1..1 INBOUND ${parent} ${collections.UserPosts}

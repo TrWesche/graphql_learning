@@ -34,11 +34,6 @@ const resolvers = {
 
         const deletedPosts = await PostRepo.deletePost(post_id);
         return deletedPosts[0];
-
-        // TODO: Implement comment deletion
-        // db.comments = db.comments.filter((comment) => {
-        //     return comment.post_id !== args.post_id;
-        // })
     }
 };
 
