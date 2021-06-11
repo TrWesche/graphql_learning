@@ -35,7 +35,8 @@ const collections = {
   PostComments: db.collection("PostComments"),
   // Graphs
   postRelationshipsGraph: db.graph("postRelationshipsGraph"),
-  commentRelationshipsGraph: db.graph("commentRelationshipsGraph")
+  commentRelationshipsGraph: db.graph("commentRelationshipsGraph"),
+  userRelationshipsGraph: db.graph("userRelationshipsGraph")
 }
 
 
