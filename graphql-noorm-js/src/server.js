@@ -6,6 +6,8 @@ const { execute, subscribe } = require('graphql');
 const { PubSub } = require('graphql-subscriptions');
 const { SubscriptionServer } = require('subscriptions-transport-ws');
 
+import { processJWT } from './middleware/auth';
+
 import schema from './schema';
 import UserRepo from './repositories/user.repo';
 import PostRepo from './repositories/post.repo';
@@ -14,16 +16,25 @@ import CommentRepo from './repositories/comment.repo';
 const app = express();
 const pubsub = new PubSub();
 
+const decodedPayload = {
+  user: function (args, req) {
+    return req.user;
+  }
+}
+
+app.use(processJWT);
 app.use(
   '/graphql',
   graphqlHTTP({
     schema: schema,
+    rootValue: decodedPayload,
     graphiql: true,
     context: { 
       UserRepo,
       PostRepo,
       CommentRepo,
-      pubsub }
+      pubsub
+    }
 }));
 
 const server = app.listen(4000, () => {
