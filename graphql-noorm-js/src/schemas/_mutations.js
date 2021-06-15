@@ -3,6 +3,7 @@ import gql from 'graphql-tag';
 const typedef = gql`
     type Mutation {
         createUser(data: CreateUserInput!): User!
+        loginUser(data: LoginUserInput!): User!
         deleteUser(user_id: ID!): User!
         updateUser(user_id: ID!, data: UpdateUserInput!): User!
         createPost(data: CreatePostInput!): Post!

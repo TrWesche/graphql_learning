@@ -1,7 +1,8 @@
 // https://github.com/prisma/prisma-examples/tree/latest/typescript/graphql
-const express = require('express')
-const { graphqlHTTP } = require('express-graphql');
-const { execute, subscribe } = require('graphql');
+import express from "express";
+import cors from "cors";
+import { graphqlHTTP } from "express-graphql";
+import { execute, subscribe } from "graphql";
 
 const { PubSub } = require('graphql-subscriptions');
 const { SubscriptionServer } = require('subscriptions-transport-ws');
@@ -16,12 +17,13 @@ import CommentRepo from './repositories/comment.repo';
 const app = express();
 const pubsub = new PubSub();
 
-const decodedPayload = {
+let decodedPayload = {
   user: function (args, req) {
     return req.user;
   }
 }
 
+app.use(cors());
 app.use(processJWT);
 app.use(
   '/graphql',

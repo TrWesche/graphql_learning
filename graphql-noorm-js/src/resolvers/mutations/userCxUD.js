@@ -1,14 +1,28 @@
-// import { v4 as uuidV4 } from "uuid";
+import AuthHandling from "../../helpers/authHandling";
+import bcrypt from "bcrypt";
+import { BCRYPT_WORK_FACTOR } from "../../config";
 
 const resolvers = {
     async createUser(parent, args, { UserRepo }, info) {
-        const emailCheck = await UserRepo.getUserByEmail(args.data.email);
+        const { data } = args;
+
+        const emailCheck = await UserRepo.getUserByEmail(data.email);
 
         if (emailCheck.length !== 0) {
             throw new Error(`An account has already been registered under that email.`)
         }
 
-        const users = await UserRepo.createUser(args.data);
+        const encryptedPassword = bcrypt.hash(data.password, BCRYPT_WORK_FACTOR)
+
+        const protectedData = {
+            ...data,
+            password: encryptedPassword
+        }
+
+        const users = await UserRepo.createUser(protectedData);
+        
+        AuthHandling.generateCookies(users[0]);
+
         return users[0];
     },
     async updateUser(parent, args, { UserRepo }, info) {
@@ -39,23 +53,6 @@ const resolvers = {
         }
 
         const deletedUsers = await UserRepo.deleteUser(args.user_id);
-
-        // TODO: Need to re-implement this with queries
-        // db.posts = db.posts.filter((post) => {
-        //     const match = post.author_id === args.user_id;
-
-        //     if (match) {
-        //         db.comments = db.comments.filter((comment) => {
-        //             return comment.post_id !== post.id;
-        //         })
-        //     }
-
-        //     return !match
-        // })
-
-        // db.comments = db.comments.filter((comment) => {
-        //     return comment.author_id !== args.user_id;
-        // })
 
         return deletedUsers[0];
     }

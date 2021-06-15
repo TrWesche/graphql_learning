@@ -4,12 +4,19 @@ const typedef = gql`
     input CreateUserInput {
         name: String!
         email: String!
+        password: String!
         age: Int
+    }
+
+    input LoginUserInput {
+        email: String!
+        password: String!
     }
 
     input UpdateUserInput {
         name: String
         email: String
+        password: String
         age: Int
     }
 

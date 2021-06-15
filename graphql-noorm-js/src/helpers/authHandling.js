@@ -1,5 +1,5 @@
-const jwt = require("jsonwebtoken");
-const { PRIVATE_KEY } = require("../config");
+import jwt from "jsonwebtoken";
+import { PRIVATE_KEY } from "../config";
 
 class AuthHandling {
     static generateCookies(queryRes, queryData) {
@@ -8,11 +8,11 @@ class AuthHandling {
 
         // Javascript Enabled Cookie - Full JWT
         // queryRes.cookie("sid", token, {httpOnly: false, maxAge: 86400000, secure: true, sameSite: "None", path: '/', domain: ".twesche.com"});
-        queryRes.cookie("sid", token, {httpOnly: false, maxAge: 86400000, path: '/', domain: "twesche.com"});
+        queryRes.cookie("sid", token, {httpOnly: false, maxAge: 86400000, path: '/'});
 
         // HTTP Only Cookie - JWT Signature Only
         // queryRes.cookie("_sid", split_token[2], {httpOnly: true, maxAge: 86400000, secure: true, sameSite: "None", path: '/', domain: ".twesche.com"});
-        queryRes.cookie("_sid", split_token[2], {httpOnly: true, maxAge: 86400000, path: '/', domain: "twesche.com"});
+        queryRes.cookie("_sid", split_token[2], {httpOnly: true, maxAge: 86400000, path: '/'});
     }
 
     static validateCookies(queryReq) {

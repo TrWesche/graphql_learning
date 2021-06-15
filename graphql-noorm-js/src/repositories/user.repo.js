@@ -1,6 +1,5 @@
 import{ default as db, collections } from '../db';
 import { aql } from 'arangojs'
-import { GraphVertexCollection } from 'arangojs/graph'
 
 class UserRepo {
     // Manually Checked - OK (6/7/2021)
