@@ -1,27 +1,12 @@
-//src/database.js
-import { Database } from 'arangojs'
-// import dotenv from 'dotenv'
-
-// dotenv.config();
-
-// console.log(process.env.ARANGODB_ADDRESS);
-// console.log(process.cwd());
-
-// TODO: Fixt The Environment variable based version of this
-// Create Database
-// const db = new Database({
-//   url: process.env.ARANGODB_ADDRESS,
-//   databaseName: process.env.ARANGODB_NAME,
-//   auth: {username: process.env.ARANGODB_USER, password: process.env.ARANGODB_PASSWORD}
-// })
+import { Database } from 'arangojs';
+import { ARANGODB_ADDRESS, ARANGODB_NAME, ARANGODB_USER, ARANGODB_PASSWORD } from './config';
 
 const db = new Database({
-  url: "http://127.0.0.1:1234/",
-  databaseName: "GRAPHQL_LRN",
-  auth: {username: "root", password: "graphqlandarangodb"}
+  url: ARANGODB_ADDRESS,
+  databaseName: ARANGODB_NAME,
+  auth: {username: ARANGODB_USER, password: ARANGODB_PASSWORD}
 })
 
-db.graph
 // Define Database Collections
 // Document Collections
 const collections = {
@@ -38,7 +23,6 @@ const collections = {
   commentRelationshipsGraph: db.graph("commentRelationshipsGraph"),
   userRelationshipsGraph: db.graph("userRelationshipsGraph")
 }
-
 
 export {
   db as default,

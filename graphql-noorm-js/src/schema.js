@@ -10,14 +10,13 @@ import Post from './schemas/post';
 import Comment from './schemas/comment';
 
 // Import Resolvers
-import joinResolvers from './resolvers/joins';
+import fieldResolvers from './resolvers/fields';
 import mutationResolvers from './resolvers/mutations';
 import queryResolvers from './resolvers/queries';
 import subscriptionResolvers from './resolvers/subscriptions';
 
 // Import Connectors
 
-// console.log(queryResolvers)
 
 const schema = makeExecutableSchema({
     typeDefs: [
@@ -29,7 +28,7 @@ const schema = makeExecutableSchema({
         Post, 
         Comment],
     resolvers: Object.assign({}, 
-        joinResolvers, 
+        fieldResolvers, 
         mutationResolvers, 
         queryResolvers, 
         subscriptionResolvers),
