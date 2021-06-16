@@ -34,7 +34,8 @@ const resolvers = {
     },
     // Mutation Resolvers
     Mutation: {
-        async createUser(parent, args, { UserRepo }, info) {
+        async createUser(parent, args, ctx, info) {
+            const { UserRepo, response } = ctx;
             const { data } = args;
     
             const emailCheck = await UserRepo.getUserByEmail(data.email);
@@ -44,20 +45,23 @@ const resolvers = {
             }
     
             const encryptedPassword = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR)
-    
             const protectedData = {
                 ...data,
                 password: encryptedPassword
             }
     
             const users = await UserRepo.createUser(protectedData);
-            
-            AuthHandling.generateCookies(users[0]);
-    
+            const returnUser = {
+                key: users[0]._key,
+                name: users[0].name,
+            }
+
+            AuthHandling.generateCookies(response, returnUser);
             return users[0];
         },
-        async updateUser(parent, args, { UserRepo }, info) {
-            const {user_id, data} = args;
+        async updateUser(parent, args, ctx, info) {
+            const { UserRepo } = ctx;
+            const { user_id, data } = args;
     
             const userCheck = await UserRepo.getUserByID(user_id);
     

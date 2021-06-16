@@ -1,6 +1,7 @@
 // https://github.com/prisma/prisma-examples/tree/latest/typescript/graphql
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import { graphqlHTTP } from "express-graphql";
 import { execute, subscribe } from "graphql";
 
@@ -17,27 +18,33 @@ import CommentRepo from './repositories/comment.repo';
 const app = express();
 const pubsub = new PubSub();
 
-let decodedPayload = {
-  user: function (args, req) {
-    return req.user;
-  }
-}
+// let decodedPayload = {
+//   user: function (args, req) {
+//     return req.user;
+//   }
+// }
 
-app.use(cors());
+app.use(cors({
+  credentials: true,
+  origin: "http://localhost:4000"
+}));
+app.use(cookieParser());
 app.use(processJWT);
 app.use(
   '/graphql',
-  graphqlHTTP({
+  graphqlHTTP((request, response, graphQLParams) => ({
     schema: schema,
-    rootValue: decodedPayload,
+    rootValue: request,
     graphiql: true,
     context: { 
       UserRepo,
       PostRepo,
       CommentRepo,
-      pubsub
+      pubsub,
+      response
     }
-}));
+  }))
+);
 
 const server = app.listen(4000, () => {
   console.log(`\

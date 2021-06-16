@@ -1,21 +1,23 @@
 import AuthHandling from "../../helpers/authHandling";
 import bcrypt from "bcrypt";
-import { BCRYPT_WORK_FACTOR } from "../../config";
 
 const resolvers = {
     // Mutation Resolvers
     Mutation: {
         async loginUser(parent, args, ctx, info) {
-            // TODO
-            const { UserRepo } = ctx;
+            const { UserRepo, response } = ctx;
             const { data } = args;
             
-            const user = await UserRepo.getUserByEmail(data.email);
-            if (user.length !== 0) {
-                const isValid = await bcrypt.compare(data.password, user[0].password);
+            const users = await UserRepo.getUserByEmail(data.email);
+            if (users.length !== 0) {
+                const isValid = await bcrypt.compare(data.password, users[0].password);
                 if (isValid) {
-                    AuthHandling.generateCookies()
-                    return user[0];
+                    const returnUser = {
+                        key: users[0]._key,
+                        name: users[0].name,
+                    }
+                    AuthHandling.generateCookies(response, returnUser);
+                    return users[0];
                 }
             }
 

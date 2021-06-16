@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { PRIVATE_KEY } from "../config";
+import { PRIVATE_KEY, NODE_ENV } from "../config";
 
 class AuthHandling {
     static generateCookies(queryRes, queryData) {
@@ -8,17 +8,16 @@ class AuthHandling {
 
         // Javascript Enabled Cookie - Full JWT
         // queryRes.cookie("sid", token, {httpOnly: false, maxAge: 86400000, secure: true, sameSite: "None", path: '/', domain: ".twesche.com"});
-        queryRes.cookie("sid", token, {httpOnly: false, maxAge: 86400000, path: '/'});
+        queryRes.cookie("sid", token, {httpOnly: false, maxAge: 86400000, secure: NODE_ENV === "production", path: '/'});
 
         // HTTP Only Cookie - JWT Signature Only
         // queryRes.cookie("_sid", split_token[2], {httpOnly: true, maxAge: 86400000, secure: true, sameSite: "None", path: '/', domain: ".twesche.com"});
-        queryRes.cookie("_sid", split_token[2], {httpOnly: true, maxAge: 86400000, path: '/'});
+        queryRes.cookie("_sid", split_token[2], {httpOnly: true, maxAge: 86400000, secure: NODE_ENV === "production", path: '/'});
     }
 
     static validateCookies(queryReq) {
         const privateToken = queryReq.cookies._sid;
         const split_publicToken = queryReq.cookies.sid.split(".");
-
         // Reconstruct Check Token
         const verificationToken = `${split_publicToken[0]}.${split_publicToken[1]}.${privateToken}`;
 

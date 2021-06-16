@@ -59,7 +59,8 @@ class UserRepo {
             INSERT {
                 name: ${data.name},
                 email: TRIM(${data.email}),
-                age: ${data.age ? data.age : null}
+                age: ${data.age ? data.age : null},
+                password: ${data.password}
             } INTO ${collections.Users} OPTIONS { keyOptions: { type: "padded" } }
             RETURN NEW
         `;
