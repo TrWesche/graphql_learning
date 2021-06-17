@@ -6,17 +6,21 @@ const resolvers = {
     // Field Resolvers
     Field: {
         User: {
-            async posts(parent, args, { UserRepo }, info) {
+            async posts(parent, args, ctx, info) {
+                const { UserRepo } = ctx;
                 return await UserRepo.getUserPosts(parent);
             },
-            async comments(parent, args, { UserRepo }, info) {
+            async comments(parent, args, ctx, info) {
+                const { UserRepo } = ctx;
                 return await UserRepo.getUserComments(parent);
             }
         }
     },
     // Query Resolvers
     Query: {
-        async users(parent, args, { UserRepo }, info) {
+        async users(parent, args, ctx, info) {
+            const { UserRepo } = ctx;
+
             if (args.id) {
                 return await UserRepo.getUserByID(args.id);
             }
@@ -60,11 +64,13 @@ const resolvers = {
             return users[0];
         },
         async updateUser(parent, args, ctx, info) {
-            const { UserRepo } = ctx;
-            const { user_id, data } = args;
-    
-            const userCheck = await UserRepo.getUserByID(user_id);
-    
+            // Checked Updated Version Using Validated Token Data - 6/16/2021
+            const { AuthorizationRepo, UserRepo } = ctx;
+            const { rootValue } = info;
+            const { data } = args;
+
+            const userCheck = await AuthorizationRepo.authorizeUserAction(rootValue.user.key);
+
             if (userCheck.length === 0) {
                 throw new Error(`User not found`);
             }
@@ -77,8 +83,18 @@ const resolvers = {
                 }
             }
     
-            const updatedUsers = await UserRepo.updateUser(user_id, data);
-            return updatedUsers[0];
+            if (typeof data.password === 'string') {
+                const encryptedPassword = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR)
+                const protectedData = {
+                    ...data,
+                    password: encryptedPassword
+                }
+                const updatedUsers = await UserRepo.updateUser(rootValue.user.key, protectedData);
+                return updatedUsers[0];
+            }
+
+            const updatedUsers = await UserRepo.updateUser(rootValue.user.key, data);
+            return updatedUsers[0];    
         },
         async deleteUser(parent, args, { UserRepo }, info) {
             const userCheck = await UserRepo.getUserByID(args.user_id);

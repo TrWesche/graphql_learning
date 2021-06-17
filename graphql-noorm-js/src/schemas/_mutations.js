@@ -5,7 +5,7 @@ const typedef = gql`
         createUser(data: CreateUserInput!): User!
         loginUser(data: LoginUserInput!): User!
         deleteUser(user_id: ID!): User!
-        updateUser(user_id: ID!, data: UpdateUserInput!): User!
+        updateUser(data: UpdateUserInput!): User!
         createPost(data: CreatePostInput!): Post!
         updatePost(post_id: ID!, data: UpdatePostInput!): Post!
         deletePost(post_id: ID!): Post!

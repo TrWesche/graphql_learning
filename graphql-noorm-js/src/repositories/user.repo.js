@@ -69,7 +69,7 @@ class UserRepo {
         return cursor.all();
     }
 
-    // Manually Checked - OK (6/7/2021)
+    // Manually Checked - Updated Version (6/16/2021)
     static async updateUser(user_id, data) {
         // No Updates
         if (!data.name && !data.age && !data.email) {
@@ -93,12 +93,19 @@ class UserRepo {
         if (data.email !== undefined) {updateValues.push(aql`email: ${data.email}`)};
 
         const query = aql`
-            LET key = PARSE_IDENTIFIER(${user_id}).key
-            UPDATE key
+            UPDATE ${user_id}
             WITH {${aql.join(updateValues, " ,")}}
             IN ${collections.Users}
             RETURN NEW
         `;
+
+        // const query = aql`
+        //     LET key = PARSE_IDENTIFIER(${user_id}).key
+        //     UPDATE key
+        //     WITH {${aql.join(updateValues, " ,")}}
+        //     IN ${collections.Users}
+        //     RETURN NEW
+        // `;
 
         const cursor = await db.query(query);
         return cursor.all();

@@ -14,6 +14,7 @@ import schema from './schema';
 import UserRepo from './repositories/user.repo';
 import PostRepo from './repositories/post.repo';
 import CommentRepo from './repositories/comment.repo';
+import AuthorizationRepo from './repositories/authorization.repo';
 
 const app = express();
 const pubsub = new PubSub();
@@ -37,6 +38,7 @@ app.use(
     rootValue: request,
     graphiql: true,
     context: { 
+      AuthorizationRepo,
       UserRepo,
       PostRepo,
       CommentRepo,
