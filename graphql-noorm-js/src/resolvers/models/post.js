@@ -27,15 +27,16 @@ const resolvers = {
     // Mutation Resolvers
     Mutation: {
         async createPost(parent, args, ctx, info) {
-            const { UserRepo, PostRepo } = ctx;
+            const { AuthorizationRepo, PostRepo } = ctx;
+            const { rootValue } = info;
             const { data } = args;
     
-            const userCheck = await UserRepo.getUserByID(data.author_id);
+            const userCheck = await AuthorizationRepo.authorizeUserAction(rootValue.user.key);
             if (userCheck.length === 0) {
-                throw new Error(`User not found.`)
+                throw new Error(`User not found`);
             }
     
-            const post = await PostRepo.createPost(data);
+            const post = await PostRepo.createPost(rootValue.user.key, data);
             return post[0];
         },
         async updatePost(parent, args, ctx, info) {

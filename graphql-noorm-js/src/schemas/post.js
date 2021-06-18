@@ -5,7 +5,6 @@ const typedef = gql`
         title: String!
         body: String!
         published: Boolean!
-        author_id: ID!
     }
 
     input UpdatePostInput {

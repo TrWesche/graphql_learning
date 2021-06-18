@@ -3,17 +3,18 @@ import { aql } from 'arangojs'
 
 class PostRepo {
     // Manually Checked - OK (6/10/2021)
-    static async createPost(data) {
+    static async createPost(author_id, data) {
+        const fullAuthorID = `${collections.Users.name}/${author_id}`
         const query = aql`
             INSERT {
                 title: ${data.title},
                 body: ${data.body},
                 published: ${data.published ? data.published : false}
             } INTO ${collections.Posts} OPTIONS { keyOptions: { type: "padded" } }
-            let newPost = NEW
+            LET newPost = NEW
 
             INSERT {
-                _from: ${data.author_id},
+                _from: ${fullAuthorID},
                 _to: newPost._id
             } INTO ${collections.UserPosts}
             RETURN newPost
