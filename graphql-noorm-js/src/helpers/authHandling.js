@@ -30,6 +30,11 @@ class AuthHandling {
 
         return verifyResult;
     }
+
+    static clearCookies(response) {
+        response.clearCookie('sid');
+        response.clearCookie('_sid');
+    }
 }
 
 export default AuthHandling;

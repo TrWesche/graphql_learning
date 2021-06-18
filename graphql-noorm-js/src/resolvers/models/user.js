@@ -69,28 +69,23 @@ const resolvers = {
             const { rootValue } = info;
             const { data } = args;
 
-            // console.log(rootValue.user);
-
             if (!rootValue.user || !rootValue.user.key) {
                 throw new Error(`Please login to continue`);
             }
 
             const userCheck = await AuthorizationRepo.authorizeUserAction(rootValue.user.key);
-
             if (userCheck.length === 0) {
                 throw new Error(`User not found`);
             }
     
             if (typeof data.email === 'string') {
                 const emailCheck = await UserRepo.getUserByEmail(data.email);
-    
                 if (emailCheck.length !== 0) {
                     throw new Error(`An account has already been registered under that email.`)
                 }
             }
     
             if (typeof data.password === 'string') {
-                console.log("Changing Password");
                 const encryptedPassword = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR)
                 const protectedData = {
                     ...data,
@@ -112,16 +107,12 @@ const resolvers = {
             }
 
             const userCheck = await AuthorizationRepo.authorizeUserAction(rootValue.user.key);
-    
             if (userCheck.length === 0) {
                 throw new Error(`User not found`);
             }
     
             const deletedUsers = await UserRepo.deleteUser(rootValue.user.key);
-    
-            response.clearCookie('sid');
-            response.clearCookie('_sid');
-
+            AuthHandling.clearCookies(response);
             return deletedUsers[0];
         }
     }
