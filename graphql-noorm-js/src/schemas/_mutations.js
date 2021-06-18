@@ -7,11 +7,11 @@ const typedef = gql`
         deleteUser: User!
         updateUser(data: UpdateUserInput!): User!
         createPost(data: CreatePostInput!): Post!
-        updatePost(post_id: ID!, data: UpdatePostInput!): Post!
-        deletePost(post_id: ID!): Post!
+        updatePost(post_key: ID!, data: UpdatePostInput!): Post!
+        deletePost(post_key: ID!): Post!
         createComment(data: CreateCommentInput!): Comment!
-        updateComment(comment_id: ID!, data: UpdateCommentInput!): Comment!
-        deleteComment(comment_id: ID!): Comment!
+        updateComment(comment_key: ID!, data: UpdateCommentInput!): Comment!
+        deleteComment(comment_key: ID!): Comment!
     }
 `;
 

@@ -21,7 +21,7 @@ const typedef = gql`
     }
 
     type User {
-        _id: ID!
+        _key: ID!
         name: String!
         email: String!
         age: Int

@@ -69,11 +69,7 @@ const resolvers = {
             const { rootValue } = info;
             const { data } = args;
 
-            if (!rootValue.user || !rootValue.user.key) {
-                throw new Error(`Please login to continue`);
-            }
-
-            const userCheck = await AuthorizationRepo.authorizeUserAction(rootValue.user.key);
+            const userCheck = await AuthorizationRepo.authorizeUserAction(rootValue.user);
             if (userCheck.length === 0) {
                 throw new Error(`User not found`);
             }
@@ -91,27 +87,23 @@ const resolvers = {
                     ...data,
                     password: encryptedPassword
                 }
-                const updatedUsers = await UserRepo.updateUser(rootValue.user.key, protectedData);
+                const updatedUsers = await UserRepo.updateUser(rootValue.user, protectedData);
                 return updatedUsers[0];
             }
 
-            const updatedUsers = await UserRepo.updateUser(rootValue.user.key, data);
+            const updatedUsers = await UserRepo.updateUser(rootValue.user, data);
             return updatedUsers[0];    
         },
         async deleteUser(parent, args, ctx, info) {
             const { AuthorizationRepo, UserRepo, response } = ctx;
             const { rootValue } = info;
-            
-            if (!rootValue.user || !rootValue.user.key) {
-                throw new Error(`Please login to continue`);
-            }
 
-            const userCheck = await AuthorizationRepo.authorizeUserAction(rootValue.user.key);
+            const userCheck = await AuthorizationRepo.authorizeUserAction(rootValue.user);
             if (userCheck.length === 0) {
                 throw new Error(`User not found`);
             }
     
-            const deletedUsers = await UserRepo.deleteUser(rootValue.user.key);
+            const deletedUsers = await UserRepo.deleteUser(rootValue.user);
             AuthHandling.clearCookies(response);
             return deletedUsers[0];
         }

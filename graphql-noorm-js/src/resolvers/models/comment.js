@@ -21,46 +21,47 @@ const resolvers = {
     // Mutation Resolvers
     Mutation: {
         async createComment(parent, args, ctx, info) {
-            const { CommentRepo, UserRepo, PostRepo } = ctx;
+            const { AuthorizationRepo, CommentRepo, PostRepo } = ctx;
+            const { rootValue } = info;
             const { data } = args;
             
-            const userCheck = await UserRepo.getUserByID(data.author_id);
+            const userCheck = await AuthorizationRepo.authorizeUserAction(rootValue.user);
             if (userCheck.length === 0) {
-                throw new Error(`User not found.`)
+                throw new Error(`User not found`);
             }
     
-            const postCheck = await PostRepo.getPostByID(data.post_id);
+            const postCheck = await PostRepo.getPostByKey(data.post_key);
             if (postCheck.length === 0 || !postCheck[0].published) {
                 throw new Error(`Count not find target post.`)
             }
     
-            const comments = await CommentRepo.createComment(data);
+            const comments = await CommentRepo.createComment(rootValue.user, data);
             return comments[0];
         },
         async updateComment(parent, args, ctx, info) {
-            const { CommentRepo } = ctx;
-            const { comment_id, data } = args;
-    
-            const commentCheck = await CommentRepo.getCommentByID(comment_id);
-    
-            if (commentCheck.length === 0) {
-                throw new Error(`Comment not found`)
+            const { AuthorizationRepo, CommentRepo } = ctx;
+            const { rootValue } = info;
+            const { comment_key, data } = args;
+            
+            const authCheck = await AuthorizationRepo.authorizeCommentAction(rootValue.user, comment_key);
+            if (authCheck.length === 0) {
+                throw new Error(`Unable to update comment.`);
             }
     
-            const updatedComments = await CommentRepo.updateComment(comment_id, data);
+            const updatedComments = await CommentRepo.updateComment(comment_key, data);
             return updatedComments[0];
         },
         async deleteComment(parent, args, ctx, info) {
-            const { CommentRepo } = ctx;
-            const { comment_id } = args;
+            const { AuthorizationRepo, CommentRepo } = ctx;
+            const { rootValue } = info;
+            const { comment_key } = args;
     
-            const commentCheck = await CommentRepo.getCommentByID(comment_id);
-    
-            if (commentCheck.length === 0) {
-                throw new Error(`Comment not found`)
+            const authCheck = await AuthorizationRepo.authorizeCommentAction(rootValue.user, comment_key);
+            if (authCheck.length === 0) {
+                throw new Error(`Unable to delete comment.`);
             }
     
-            const deletedComments = await CommentRepo.deleteComment(comment_id);
+            const deletedComments = await CommentRepo.deleteComment(comment_key);
             return deletedComments[0];
         }
     },

@@ -3,8 +3,7 @@ import gql from 'graphql-tag';
 const typedef = gql`
     input CreateCommentInput {
         text: String!
-        author_id: ID!
-        post_id: ID!
+        post_key: ID!
     }
 
     input UpdateCommentInput {
@@ -12,10 +11,10 @@ const typedef = gql`
     }
 
     type Comment {
-        _id: ID!
+        _key: ID!
         text: String!
         author: User!
-        post: Post!
+        post: Post
     }
 `;
 

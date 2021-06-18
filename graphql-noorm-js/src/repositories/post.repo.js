@@ -3,8 +3,8 @@ import { aql } from 'arangojs'
 
 class PostRepo {
     // Manually Checked - OK (6/10/2021)
-    static async createPost(author_id, data) {
-        const fullAuthorID = `${collections.Users.name}/${author_id}`
+    static async createPost(user_object, data) {
+        const user_id = `${collections.Users.name}/${user_object.key}`
         const query = aql`
             INSERT {
                 title: ${data.title},
@@ -14,7 +14,7 @@ class PostRepo {
             LET newPost = NEW
 
             INSERT {
-                _from: ${fullAuthorID},
+                _from: ${user_id},
                 _to: newPost._id
             } INTO ${collections.UserPosts}
             RETURN newPost
@@ -37,10 +37,10 @@ class PostRepo {
     }
 
     // Manually Checked - OK (6/10/2021)
-    static async getPostByID(data) {
+    static async getPostByKey(post_key) {
         const query = aql`
             FOR post IN ${collections.Posts}
-                FILTER post._id == ${data}
+                FILTER post._key == ${post_key}
                 LIMIT 1
                 RETURN post
         `;
@@ -68,12 +68,12 @@ class PostRepo {
     }
 
     // Manually Checked - OK (6/10/2021)
-    static async updatePost(post_id, data) {
+    static async updatePost(post_key, data) {
         // No Updates
         if (!data.title && !data.body && !data.published) {
             const query = aql`
                 FOR post IN ${collections.Posts}
-                    FILTER post._id == ${post_id}
+                    FILTER post._key == ${post_key}
                     LIMIT 1
                     RETURN post
             `;
@@ -91,8 +91,7 @@ class PostRepo {
         if (data.published !== undefined) {updateValues.push(aql`published: ${data.published}`)};
 
         const query = aql`
-            LET key = PARSE_IDENTIFIER(${post_id}).key
-            UPDATE key
+            UPDATE ${post_key}
             WITH {${aql.join(updateValues, " ,")}}
             IN ${collections.Posts}
             RETURN NEW
@@ -103,7 +102,8 @@ class PostRepo {
     }
  
     // Manually Checked - OK (6/10/2021)
-    static async deletePost(post_id) {
+    static async deletePost(post_key) {
+        const post_id = `${collections.Posts.name}/${post_key}`
         const query = aql`
             LET edgeKeys = (
                 FOR v, e IN 1..1 ANY ${post_id} GRAPH ${collections.postRelationshipsGraph._name}
@@ -115,8 +115,7 @@ class PostRepo {
                 REMOVE edgeKey IN ${collections.PostComments} OPTIONS { ignoreErrors: true }
             ) 
 
-            LET key = PARSE_IDENTIFIER(${post_id}).key
-            REMOVE key
+            REMOVE ${post_key}
             IN ${collections.Posts}
             RETURN OLD
         `;

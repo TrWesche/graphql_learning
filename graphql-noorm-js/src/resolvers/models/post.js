@@ -31,36 +31,38 @@ const resolvers = {
             const { rootValue } = info;
             const { data } = args;
     
-            const userCheck = await AuthorizationRepo.authorizeUserAction(rootValue.user.key);
+            const userCheck = await AuthorizationRepo.authorizeUserAction(rootValue.user);
             if (userCheck.length === 0) {
                 throw new Error(`User not found`);
             }
     
-            const post = await PostRepo.createPost(rootValue.user.key, data);
+            const post = await PostRepo.createPost(rootValue.user, data);
             return post[0];
         },
         async updatePost(parent, args, ctx, info) {
-            const { PostRepo } = ctx;
-            const { post_id, data } = args;
+            const { AuthorizationRepo, PostRepo } = ctx;
+            const { rootValue } = info;
+            const { post_key, data } = args;
     
-            const postCheck = await PostRepo.getPostByID(post_id);
+            const postCheck = await AuthorizationRepo.authorizePostAction(rootValue.user, post_key)
             if (postCheck.length === 0) {
-                throw new Error(`Post not found.`)
+                throw new Error(`Unable to update post.`)
             }
     
-            const updatedPosts = await PostRepo.updatePost(post_id, data);
+            const updatedPosts = await PostRepo.updatePost(post_key, data);
             return updatedPosts[0];
         },
         async deletePost(parent, args, ctx, info) {
-            const { PostRepo } = ctx;
-            const { post_id } = args;
+            const { AuthorizationRepo, PostRepo } = ctx;
+            const { rootValue } = info;
+            const { post_key } = args;
     
-            const postCheck = await PostRepo.getPostByID(post_id);
+            const postCheck = await AuthorizationRepo.authorizePostAction(rootValue.user, post_key)
             if (postCheck.length === 0) {
-                throw new Error(`Post not found.`)
+                throw new Error(`Unable to delete post.`)
             }
     
-            const deletedPosts = await PostRepo.deletePost(post_id);
+            const deletedPosts = await PostRepo.deletePost(post_key);
             return deletedPosts[0];
         }
     },

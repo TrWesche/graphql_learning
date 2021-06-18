@@ -3,7 +3,9 @@ import { aql } from 'arangojs'
 
 class CommentRepo {
     // Manually Checked - OK (6/10/2021)
-    static async createComment(data) {
+    static async createComment(user_object, data) {
+        const user_id = `${collections.Users.name}/${user_object.key}`
+        const post_id = `${collections.Posts.name}/${data.post_key}`
         const query = aql`
             INSERT {
                 text: ${data.text}
@@ -11,12 +13,12 @@ class CommentRepo {
             LET newComment = NEW
 
             INSERT {
-                _from: ${data.author_id},
+                _from: ${user_id},
                 _to: newComment._id
             } INTO ${collections.UserComments}
             
             INSERT {
-                _from: ${data.post_id},
+                _from: ${post_id},
                 _to: newComment._id
             } INTO ${collections.PostComments}
 
@@ -40,10 +42,10 @@ class CommentRepo {
     }
 
     // Manually Checked - OK (6/10/2021)
-    static async getCommentByID(data) {
+    static async getCommentByKey(comment_key) {
         let query = aql`
             FOR comment IN ${collections.Comments}
-                FILTER comment._id == ${data}
+                FILTER comment._key == ${comment_key}
                 LIMIT 1
                 RETURN comment
         `;
@@ -53,7 +55,9 @@ class CommentRepo {
     }
 
     // Manually Checked - OK (6/10/2021)
-    static async updateComment(comment_id, data) {
+    static async updateComment(comment_key, data) {
+        const comment_id = `${collections.Posts.name}/${comment_key}`;
+
         // No Updates
         if (!data.text) {
             let query = aql`
@@ -72,8 +76,7 @@ class CommentRepo {
         if (data.text !== undefined) {updateValues.push(aql`text: ${data.text}`)};
 
         let query = aql`
-            LET key = PARSE_IDENTIFIER(${comment_id}).key
-            UPDATE key
+            UPDATE ${comment_key}
             WITH {${aql.join(updateValues, " ,")}}
             IN ${collections.Comments}
             RETURN NEW
@@ -84,7 +87,9 @@ class CommentRepo {
     }
 
     // Manually Checked - OK (6/10/2021)
-    static async deleteComment(comment_id) {
+    static async deleteComment(comment_key) {
+        const comment_id = `${collections.Comments.name}/${comment_key}`;
+
         const query = aql`
             LET edgeKeys = (
                 FOR v, e IN 1..1 ANY ${comment_id} GRAPH ${collections.commentRelationshipsGraph._name}
@@ -96,8 +101,7 @@ class CommentRepo {
                 REMOVE edgeKey IN ${collections.PostComments} OPTIONS { ignoreErrors: true }
             ) 
 
-            LET key = PARSE_IDENTIFIER(${comment_id}).key
-            REMOVE key
+            REMOVE ${comment_key}
             IN ${collections.Comments}
             RETURN OLD
         `;

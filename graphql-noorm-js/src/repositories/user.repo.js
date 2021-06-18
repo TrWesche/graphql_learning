@@ -15,10 +15,10 @@ class UserRepo {
     }
 
     // Manually Checked - OK (6/7/2021)
-    static async getUsersByName(data) {
+    static async getUsersByName(user_name) {
         const query = aql`
             FOR user IN ${collections.Users}
-                FILTER CONTAINS(LOWER(user.name), LOWER(${data}))
+                FILTER CONTAINS(LOWER(user.name), LOWER(${user_name}))
                 LIMIT 100
                 RETURN user
         `;
@@ -28,10 +28,10 @@ class UserRepo {
     }
 
     // Manually Checked - OK (6/7/2021)
-    static async getUserByID(data) {
+    static async getUserByKey(user_key) {
         const query = aql`
             FOR user IN ${collections.Users}
-                FILTER user._id == ${data}
+                FILTER user._key == ${user_key}
                 LIMIT 1
                 RETURN user
         `;
@@ -41,10 +41,10 @@ class UserRepo {
     }
 
     // Manually Checked - OK (6/7/2021)
-    static async getUserByEmail(data) {
+    static async getUserByEmail(user_email) {
         const query = aql`
             FOR user IN ${collections.Users}
-                FILTER LOWER(user.email) == TRIM(LOWER(${data}))
+                FILTER LOWER(user.email) == TRIM(LOWER(${user_email}))
                 LIMIT 1
                 RETURN user
         `;
@@ -70,12 +70,12 @@ class UserRepo {
     }
 
     // Manually Checked - Updated Version (6/16/2021)
-    static async updateUser(user_id, data) {
+    static async updateUser(user_object, data) {
         // No Updates
-        if (!data.name && !data.age && !data.email) {
+        if (!data.name && !data.age && !data.email && !data.password) {
             const query = aql`
                 FOR user IN ${collections.Users}
-                    FILTER user._id == ${user_id}
+                    FILTER user._key == ${user_object.key}
                     LIMIT 1
                     RETURN user
             `;
@@ -95,7 +95,7 @@ class UserRepo {
         if (data.password !== undefined) {updateValues.push(aql`password: ${data.password}`)};
 
         const query = aql`
-            UPDATE ${user_id}
+            UPDATE ${user_object.key}
             WITH {${aql.join(updateValues, " ,")}}
             IN ${collections.Users}
             RETURN NEW
@@ -106,16 +106,16 @@ class UserRepo {
     }
  
     // Manually Checked Updated Version - OK (6/17/2021)
-    static async deleteUser(user_id) {
-        const fullUserID = `${collections.Users.name}/${user_id}`
+    static async deleteUser(user_object) {
+        const user_id = `${collections.Users.name}/${user_object.key}`
         // TODO: Almost working - still leaves some edges behind, does not cascade the delete to the comments made on a deleted post
         // the link between the removed comment and post is removed however.
         const query = aql`
             LET vertexKeys = (
-                FOR v IN 1..1 OUTBOUND ${fullUserID} GRAPH ${collections.userRelationshipsGraph._name}
+                FOR v IN 1..1 OUTBOUND ${user_id} GRAPH ${collections.userRelationshipsGraph._name}
                 RETURN v._id
             )
-            LET allVerticies = APPEND([${fullUserID}],vertexKeys)
+            LET allVerticies = APPEND([${user_id}],vertexKeys)
             RETURN (FOR vertex IN allVerticies RETURN PARSE_IDENTIFIER(vertex))
         `;
         const cursor = await db.query(query);
