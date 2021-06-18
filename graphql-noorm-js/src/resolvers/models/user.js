@@ -69,6 +69,12 @@ const resolvers = {
             const { rootValue } = info;
             const { data } = args;
 
+            // console.log(rootValue.user);
+
+            if (!rootValue.user || !rootValue.user.key) {
+                throw new Error(`Please login to continue`);
+            }
+
             const userCheck = await AuthorizationRepo.authorizeUserAction(rootValue.user.key);
 
             if (userCheck.length === 0) {
@@ -84,6 +90,7 @@ const resolvers = {
             }
     
             if (typeof data.password === 'string') {
+                console.log("Changing Password");
                 const encryptedPassword = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR)
                 const protectedData = {
                     ...data,
@@ -96,15 +103,25 @@ const resolvers = {
             const updatedUsers = await UserRepo.updateUser(rootValue.user.key, data);
             return updatedUsers[0];    
         },
-        async deleteUser(parent, args, { UserRepo }, info) {
-            const userCheck = await UserRepo.getUserByID(args.user_id);
+        async deleteUser(parent, args, ctx, info) {
+            const { AuthorizationRepo, UserRepo, response } = ctx;
+            const { rootValue } = info;
+            
+            if (!rootValue.user || !rootValue.user.key) {
+                throw new Error(`Please login to continue`);
+            }
+
+            const userCheck = await AuthorizationRepo.authorizeUserAction(rootValue.user.key);
     
             if (userCheck.length === 0) {
                 throw new Error(`User not found`);
             }
     
-            const deletedUsers = await UserRepo.deleteUser(args.user_id);
+            const deletedUsers = await UserRepo.deleteUser(rootValue.user.key);
     
+            response.clearCookie('sid');
+            response.clearCookie('_sid');
+
             return deletedUsers[0];
         }
     }

@@ -92,6 +92,8 @@ class UserRepo {
 
         if (data.email !== undefined) {updateValues.push(aql`email: ${data.email}`)};
 
+        if (data.password !== undefined) {updateValues.push(aql`password: ${data.password}`)};
+
         const query = aql`
             UPDATE ${user_id}
             WITH {${aql.join(updateValues, " ,")}}
@@ -99,28 +101,21 @@ class UserRepo {
             RETURN NEW
         `;
 
-        // const query = aql`
-        //     LET key = PARSE_IDENTIFIER(${user_id}).key
-        //     UPDATE key
-        //     WITH {${aql.join(updateValues, " ,")}}
-        //     IN ${collections.Users}
-        //     RETURN NEW
-        // `;
-
         const cursor = await db.query(query);
         return cursor.all();
     }
  
-    // Manually Checked - OK (6/7/2021)
+    // Manually Checked Updated Version - OK (6/17/2021)
     static async deleteUser(user_id) {
+        const fullUserID = `${collections.Users.name}/${user_id}`
         // TODO: Almost working - still leaves some edges behind, does not cascade the delete to the comments made on a deleted post
         // the link between the removed comment and post is removed however.
         const query = aql`
             LET vertexKeys = (
-                FOR v IN 1..1 OUTBOUND ${user_id} GRAPH ${collections.userRelationshipsGraph._name}
+                FOR v IN 1..1 OUTBOUND ${fullUserID} GRAPH ${collections.userRelationshipsGraph._name}
                 RETURN v._id
             )
-            LET allVerticies = APPEND([${user_id}],vertexKeys)
+            LET allVerticies = APPEND([${fullUserID}],vertexKeys)
             RETURN (FOR vertex IN allVerticies RETURN PARSE_IDENTIFIER(vertex))
         `;
         const cursor = await db.query(query);
@@ -149,7 +144,6 @@ class UserRepo {
         };
 
         const vertexCollections = await collections.userRelationshipsGraph.vertexCollections()
-
         const deletedUserArray = await vertexRemove("Users", vertexCollections);
         return deletedUserArray;
     }

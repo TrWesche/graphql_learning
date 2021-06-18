@@ -4,7 +4,7 @@ const typedef = gql`
     type Mutation {
         createUser(data: CreateUserInput!): User!
         loginUser(data: LoginUserInput!): User!
-        deleteUser(user_id: ID!): User!
+        deleteUser: User!
         updateUser(data: UpdateUserInput!): User!
         createPost(data: CreatePostInput!): Post!
         updatePost(post_id: ID!, data: UpdatePostInput!): Post!
