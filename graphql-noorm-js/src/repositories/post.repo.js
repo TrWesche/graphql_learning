@@ -25,9 +25,10 @@ class PostRepo {
     }
 
     // Manually Checked - OK (6/10/2021)
-    static async getAllPosts() {
+    static async getPublicPosts() {
         const query = aql`
             FOR post IN ${collections.Posts}
+                FILTER post.published == TRUE
                 LIMIT 100
                 RETURN post
         `;
@@ -50,12 +51,27 @@ class PostRepo {
     }
 
     // Manually Checked - OK (6/10/2021)
-    static async getFilteredPosts(publishStatus, searchString) {
+    static async getFilteredPosts(searchString, author_key, post_key, published) {
         const queryParams = [];
 
-        if (publishStatus !== undefined) {queryParams.push(aql`FILTER post.published == ${publishStatus}`)};
-
         if (searchString !== undefined) {queryParams.push(aql`FILTER LIKE(post.body, ${'%'+searchString+'%'}, true)`)};
+
+        if (post_key !== undefined) {queryParams.push(aql`FILTER post._key == ${post_key}`)};
+
+        if (published !== undefined) {queryParams.push(aql`FILTER post.published == ${published}`)};
+
+        if (author_key !== undefined) {
+            const author_id = `${collections.Users.name}/${author_key}`
+
+            const query = aql`
+            FOR post IN 1..1 OUTBOUND ${author_id} ${collections.UserPosts}
+                ${aql.join(queryParams)}
+                RETURN post
+            `;
+
+            const cursor = await db.query(query);
+            return cursor.all();
+        };
 
         const query = aql`
             FOR post IN ${collections.Posts}

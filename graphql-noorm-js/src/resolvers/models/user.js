@@ -20,17 +20,18 @@ const resolvers = {
     Query: {
         async users(parent, args, ctx, info) {
             const { UserRepo } = ctx;
+            const { key, email, query } = args;
 
-            if (args.id) {
-                return await UserRepo.getUserByID(args.id);
+            if (key) {
+                return await UserRepo.getUserByKey(key);
             }
     
-            if (args.email) {
-                return await UserRepo.getUserByEmail(args.email);
+            if (email) {
+                return await UserRepo.getUserByEmail(email);
             }
     
-            if (args.query) {
-                return await UserRepo.getUsersByName(args.query);
+            if (query) {
+                return await UserRepo.getUsersByName(query);
             }
     
             return await UserRepo.getAllUsers();

@@ -2,11 +2,13 @@ const resolvers = {
     // Field Resolvers
     Field: {
         Post: {
-            async author(parent, args, { PostRepo }, info) {
+            async author(parent, args, ctx, info) {
+                const { PostRepo } = ctx;
                 const result = await PostRepo.getPostAuthors(parent);
                 return result[0];
             },
-            async comments(parent, args, { PostRepo }, info) {
+            async comments(parent, args, ctx, info) {
+                const { PostRepo } = ctx;
                 return await PostRepo.getPostComments(parent);
             }
         }
@@ -15,13 +17,25 @@ const resolvers = {
     Query: {
         async posts(parent, args, ctx, info) {
             const { PostRepo } = ctx;
-            const { query, publish_status } = args;
-    
-            if (!query && publish_status === undefined) {
-                return await PostRepo.getAllPosts();
+            const { query, author_key, post_key } = args;
+
+            if (!query && !author_key && !post_key) {
+                return await PostRepo.getPublicPosts();
             }
-    
-            return await PostRepo.getFilteredPosts(publish_status, query);
+
+            return await PostRepo.getFilteredPosts(query, author_key, post_key, true);
+        },
+        async postsPrivate(parent, args, ctx, info) {
+            const { AuthorizationRepo, PostRepo } = ctx;
+            const { rootValue } = info;
+            const { query, post_key, published } = args;
+
+            const userCheck = await AuthorizationRepo.authorizeUserAction(rootValue.user);
+            if (userCheck.length === 0) {
+                throw new Error(`User not found`);
+            }
+
+            return await PostRepo.getFilteredPosts(query, rootValue.user.key, post_key, published);
         }
     },
     // Mutation Resolvers
