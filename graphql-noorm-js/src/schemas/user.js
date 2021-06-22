@@ -20,7 +20,21 @@ const typedef = gql`
         age: Int
     }
 
-    type User {
+    interface User {
+        _key: ID!
+        name: String!
+        posts: [Post!]!
+        comments: [Comment!]!
+    }
+
+    type UserPublic implements User {
+        _key: ID!
+        name: String!
+        posts: [Post!]!
+        comments: [Comment!]!
+    }
+
+    type UserPrivate implements User {
         _key: ID!
         name: String!
         email: String!

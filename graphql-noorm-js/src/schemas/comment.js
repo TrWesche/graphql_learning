@@ -13,7 +13,7 @@ const typedef = gql`
     type Comment {
         _key: ID!
         text: String!
-        author: User!
+        author: UserPublic!
         post: Post
     }
 `;

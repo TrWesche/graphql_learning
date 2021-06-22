@@ -5,10 +5,20 @@ import { BCRYPT_WORK_FACTOR } from "../../config";
 const resolvers = {
     // Field Resolvers
     Field: {
-        User: {
+        UserPublic: {
             async posts(parent, args, ctx, info) {
                 const { UserRepo } = ctx;
                 return await UserRepo.getUserPosts(parent);
+            },
+            async comments(parent, args, ctx, info) {
+                const { UserRepo } = ctx;
+                return await UserRepo.getUserComments(parent);
+            }
+        },
+        UserPrivate: {
+            async posts(parent, args, ctx, info) {
+                const { UserRepo } = ctx;
+                return await UserRepo.getUserPosts(parent, true);
             },
             async comments(parent, args, ctx, info) {
                 const { UserRepo } = ctx;
@@ -35,6 +45,18 @@ const resolvers = {
             }
     
             return await UserRepo.getAllUsers();
+        },
+        async userPrivate(parent, args, ctx, info) {
+            const { AuthorizationRepo, UserRepo } = ctx;
+            const { rootValue } = info;
+
+            const userCheck = await AuthorizationRepo.authorizeUserAction(rootValue.user);
+            if (userCheck.length === 0) {
+                throw new Error(`User not found`);
+            }
+
+            const users = await UserRepo.getUserByKey(rootValue.user.key);
+            return users[0];
         }
     },
     // Mutation Resolvers

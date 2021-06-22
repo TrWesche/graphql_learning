@@ -149,9 +149,20 @@ class UserRepo {
     }
 
     // Manually Checked - OK (6/8/2021)
-    static async getUserPosts(parent) {
+    static async getUserPosts(parent, authenticated = false) {
+        if (authenticated) {
+            const query = aql`
+                FOR v IN 1..1 OUTBOUND ${parent} ${collections.UserPosts}
+                    RETURN v
+            `;
+
+            const cursor = await db.query(query);
+            return cursor.all();
+        }
+
         const query = aql`
             FOR v IN 1..1 OUTBOUND ${parent} ${collections.UserPosts}
+                FILTER v.published == TRUE
                 RETURN v
         `;
 

@@ -18,7 +18,7 @@ const typedef = gql`
         title: String!
         body: String!
         published: Boolean!
-        author: User!
+        author: UserPublic!
         comments: [Comment!]!
     }
 `;

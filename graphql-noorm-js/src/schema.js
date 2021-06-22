@@ -1,4 +1,5 @@
 import { makeExecutableSchema } from "graphql-tools";
+import { mergeTypeDefs }  from '@graphql-tools/merge';
 
 // Import Models
 import Queries from './schemas/_queries';
@@ -8,6 +9,16 @@ import Enumerations from './schemas/_enumerations';
 import User from './schemas/user';
 import Post from './schemas/post';
 import Comment from './schemas/comment';
+
+const types = mergeTypeDefs([
+    Queries, 
+    Mutations, 
+    Subscriptions, 
+    Enumerations, 
+    User, 
+    Post, 
+    Comment]
+);
 
 // Import Resolvers
 import fieldResolvers from './resolvers/fields';
@@ -19,14 +30,7 @@ import subscriptionResolvers from './resolvers/subscriptions';
 
 
 const schema = makeExecutableSchema({
-    typeDefs: [
-        Queries, 
-        Mutations, 
-        Subscriptions, 
-        Enumerations, 
-        User, 
-        Post, 
-        Comment],
+    typeDefs: types,
     resolvers: Object.assign({}, 
         fieldResolvers, 
         mutationResolvers, 
