@@ -30,10 +30,10 @@ class CommentRepo {
     }
 
     // Manually Checked - OK (6/8/2021)
-    static async getAllComments() {
+    static async getAllComments(count = 10, offset = 0) {
         let query = aql`
             FOR comment IN ${collections.Comments}
-                LIMIT 100
+                LIMIT ${offset}, ${count}
                 RETURN comment
         `;
 

@@ -2,11 +2,13 @@ const resolvers = {
     // Field Resolvers
     Field: {
         Comment: {
-            async author(parent, args, { CommentRepo }, info) {
+            async author(parent, args, ctx, info) {
+                const { CommentRepo } = ctx;
                 const result = await CommentRepo.getCommentAuthor(parent);
                 return result[0];
             },
-            async post(parent, args, { CommentRepo }, info) {
+            async post(parent, args, ctx, info) {
+                const { CommentRepo } = ctx;
                 const result = await CommentRepo.getCommentPost(parent);
                 return result[0];
             }
@@ -14,8 +16,10 @@ const resolvers = {
     },
     // Query Resolvers
     Query: {
-        async comments(parent, args, { CommentRepo }, info) {
-            return await CommentRepo.getAllComments();
+        async comments(parent, args, ctx, info) {
+            const { CommentRepo } = ctx;
+            const { count, offset } = args;
+            return await CommentRepo.getAllComments(count, offset);
         }
     },
     // Mutation Resolvers

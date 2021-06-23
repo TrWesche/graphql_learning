@@ -25,11 +25,11 @@ class PostRepo {
     }
 
     // Manually Checked - OK (6/10/2021)
-    static async getPublicPosts() {
+    static async getPublicPosts(count = 10, offset = 0) {
         const query = aql`
             FOR post IN ${collections.Posts}
                 FILTER post.published == TRUE
-                LIMIT 100
+                LIMIT ${offset}, ${count}
                 RETURN post
         `;
 
@@ -51,7 +51,7 @@ class PostRepo {
     }
 
     // Manually Checked - OK (6/10/2021)
-    static async getFilteredPosts(searchString, author_key, post_key, published) {
+    static async getFilteredPosts(searchString, author_key, post_key, published, count = 10, offset = 0) {
         const queryParams = [];
 
         if (searchString !== undefined) {queryParams.push(aql`FILTER LIKE(post.body, ${'%'+searchString+'%'}, true)`)};
@@ -66,6 +66,7 @@ class PostRepo {
             const query = aql`
             FOR post IN 1..1 OUTBOUND ${author_id} ${collections.UserPosts}
                 ${aql.join(queryParams)}
+                LIMIT ${offset}, ${count}
                 RETURN post
             `;
 
@@ -76,6 +77,7 @@ class PostRepo {
         const query = aql`
             FOR post IN ${collections.Posts}
                 ${aql.join(queryParams)}
+                LIMIT ${offset}, ${count}
                 RETURN post
         `;
 
@@ -141,9 +143,10 @@ class PostRepo {
     }
 
     // Manually Checked - OK (6/10/2021)
-    static async getPostComments(parent) {
+    static async getPostComments(parent, count = 10, offset = 0) {
         const query = aql`
             FOR v IN 1..1 OUTBOUND ${parent} ${collections.PostComments}
+                LIMIT ${offset}, ${count}
                 RETURN v
         `;
 
@@ -152,9 +155,10 @@ class PostRepo {
     }
 
     // Manually Checked - OK (6/10/2021)
-    static async getPostAuthors(parent) {
+    static async getPostAuthors(parent, count = 1, offset = 0) {
         const query = aql`
             FOR v IN 1..1 INBOUND ${parent} ${collections.UserPosts}
+                LIMIT ${offset}, ${count}
                 RETURN v
         `;
 

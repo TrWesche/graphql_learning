@@ -9,7 +9,8 @@ const resolvers = {
             },
             async comments(parent, args, ctx, info) {
                 const { PostRepo } = ctx;
-                return await PostRepo.getPostComments(parent);
+                const { count, offset } = args;
+                return await PostRepo.getPostComments(parent, count, offset);
             }
         }
     },
@@ -17,25 +18,25 @@ const resolvers = {
     Query: {
         async posts(parent, args, ctx, info) {
             const { PostRepo } = ctx;
-            const { query, author_key, post_key } = args;
+            const { query, author_key, post_key, count, offset } = args;
 
             if (!query && !author_key && !post_key) {
-                return await PostRepo.getPublicPosts();
+                return await PostRepo.getPublicPosts(count, offset);
             }
 
-            return await PostRepo.getFilteredPosts(query, author_key, post_key, true);
+            return await PostRepo.getFilteredPosts(query, author_key, post_key, true, count, offset);
         },
         async postsPrivate(parent, args, ctx, info) {
             const { AuthorizationRepo, PostRepo } = ctx;
             const { rootValue } = info;
-            const { query, post_key, published } = args;
+            const { query, post_key, published, count, offset } = args;
 
             const userCheck = await AuthorizationRepo.authorizeUserAction(rootValue.user);
             if (userCheck.length === 0) {
                 throw new Error(`User not found`);
             }
 
-            return await PostRepo.getFilteredPosts(query, rootValue.user.key, post_key, published);
+            return await PostRepo.getFilteredPosts(query, rootValue.user.key, post_key, published, count, offset);
         }
     },
     // Mutation Resolvers

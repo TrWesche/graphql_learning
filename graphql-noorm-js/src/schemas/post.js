@@ -19,7 +19,7 @@ const typedef = gql`
         body: String!
         published: Boolean!
         author: UserPublic!
-        comments: [Comment!]!
+        comments(count: Int, offset: Int): [Comment!]!
     }
 `;
 
