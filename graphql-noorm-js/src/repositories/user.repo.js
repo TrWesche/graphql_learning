@@ -3,10 +3,10 @@ import { aql } from 'arangojs'
 
 class UserRepo {
     // Manually Checked - OK (6/7/2021)
-    static async getAllUsers() {
+    static async getAllUsers(count = 10, offset = 0) {
         const query = aql`
             FOR user IN ${collections.Users}
-                LIMIT 100
+                LIMIT ${offset}, ${count}
                 RETURN user
         `;
 
@@ -15,11 +15,11 @@ class UserRepo {
     }
 
     // Manually Checked - OK (6/7/2021)
-    static async getUsersByName(user_name) {
+    static async getUsersByName(user_name, count = 10, offset = 0) {
         const query = aql`
             FOR user IN ${collections.Users}
                 FILTER CONTAINS(LOWER(user.name), LOWER(${user_name}))
-                LIMIT 100
+                LIMIT ${offset}, ${count}
                 RETURN user
         `;
 
@@ -149,7 +149,7 @@ class UserRepo {
     }
 
     // Manually Checked - OK (6/8/2021)
-    static async getUserPosts(parent, authenticated = false) {
+    static async getUserPosts(parent, authenticated = false, count = 10, offset = 0) {
         if (authenticated) {
             const query = aql`
                 FOR v IN 1..1 OUTBOUND ${parent} ${collections.UserPosts}
@@ -163,6 +163,7 @@ class UserRepo {
         const query = aql`
             FOR v IN 1..1 OUTBOUND ${parent} ${collections.UserPosts}
                 FILTER v.published == TRUE
+                LIMIT ${offset}, ${count}
                 RETURN v
         `;
 
@@ -171,9 +172,10 @@ class UserRepo {
     }
 
     // Manually Checked - OK (6/8/2021)
-    static async getUserComments(parent) {
+    static async getUserComments(parent, count = 10, offset = 0) {
         const query = aql`
             FOR v IN 1..1 OUTBOUND ${parent} ${collections.UserComments}
+                LIMIT ${offset}, ${count}
                 RETURN v
         `;
 

@@ -23,15 +23,15 @@ const typedef = gql`
     interface User {
         _key: ID!
         name: String!
-        posts: [Post!]!
-        comments: [Comment!]!
+        posts(count: Int, offset: Int): [Post!]!
+        comments(count: Int, offset: Int): [Comment!]!
     }
 
     type UserPublic implements User {
         _key: ID!
         name: String!
-        posts: [Post!]!
-        comments: [Comment!]!
+        posts(count: Int, offset: Int): [Post!]!
+        comments(count: Int, offset: Int): [Comment!]!
     }
 
     type UserPrivate implements User {
@@ -39,8 +39,8 @@ const typedef = gql`
         name: String!
         email: String!
         age: Int
-        posts: [Post!]!
-        comments: [Comment!]!
+        posts(count: Int, offset: Int): [Post!]!
+        comments(count: Int, offset: Int): [Comment!]!
     }
 `;
 
