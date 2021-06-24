@@ -1,6 +1,11 @@
 import gql from 'graphql-tag';
 
 const typedef = gql`
+    enum UserOrderByInput {
+        name_ASC,
+        name_DESC
+    }
+
     input CreateUserInput {
         name: String!
         email: String!
@@ -23,15 +28,15 @@ const typedef = gql`
     interface User {
         _key: ID!
         name: String!
-        posts(count: Int, offset: Int): [Post!]!
-        comments(count: Int, offset: Int): [Comment!]!
+        posts(count: Int, offset: Int, orderBy: PostOrderByInput): [Post!]!
+        comments(count: Int, offset: Int, orderBy: CommentOrderByInput): [Comment!]!
     }
 
     type UserPublic implements User {
         _key: ID!
         name: String!
-        posts(count: Int, offset: Int): [Post!]!
-        comments(count: Int, offset: Int): [Comment!]!
+        posts(count: Int, offset: Int, orderBy: PostOrderByInput): [Post!]!
+        comments(count: Int, offset: Int, orderBy: CommentOrderByInput): [Comment!]!
     }
 
     type UserPrivate implements User {
@@ -41,8 +46,8 @@ const typedef = gql`
         age: Int
         updatedAt: TimeStampUnix!
         createdAt: TimeStampUnix!
-        posts(count: Int, offset: Int): [Post!]!
-        comments(count: Int, offset: Int): [Comment!]!
+        posts(count: Int, offset: Int, orderBy: PostOrderByInput): [Post!]!
+        comments(count: Int, offset: Int, orderBy: CommentOrderByInput): [Comment!]!
     }
 `;
 

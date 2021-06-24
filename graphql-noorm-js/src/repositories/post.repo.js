@@ -28,27 +28,17 @@ class PostRepo {
 
     // Manually Checked - OK (6/10/2021)
     static async getPublicPosts(count = 10, offset = 0, orderBy) {
+        const queryParams = [];
 
         if (orderBy !== undefined) {
             const orderByParams = orderBy.split('_');
-
-            const orderByQuery = aql`SORT post.${orderByParams[0]} ${orderByParams[1]}`; 
-            const query = aql`
-                FOR post IN ${collections.Posts}
-                    FILTER post.published == TRUE
-                    ${orderByQuery}
-                    LIMIT ${offset}, ${count}
-                    RETURN post
-            `;
-
-            const cursor = await db.query(query);
-            return await cursor.all();
-        };
-
+            queryParams.push(aql`SORT post.${orderByParams[0]} ${orderByParams[1]}`);
+        }
         
         const query = aql`
             FOR post IN ${collections.Posts}
                 FILTER post.published == TRUE
+                ${aql.join(queryParams)}
                 LIMIT ${offset}, ${count}
                 RETURN post
         `;
@@ -166,9 +156,17 @@ class PostRepo {
     }
 
     // Manually Checked - OK (6/10/2021)
-    static async getPostComments(parent, count = 10, offset = 0) {
+    static async getPostComments(parent, count = 10, offset = 0, orderBy) {
+        const queryParams = [];
+
+        if (orderBy !== undefined) {
+            const orderByParams = orderBy.split('_');
+            queryParams.push(aql`SORT v.${orderByParams[0]} ${orderByParams[1]}`);
+        }
+        
         const query = aql`
             FOR v IN 1..1 OUTBOUND ${parent} ${collections.PostComments}
+                ${aql.join(queryParams)}
                 LIMIT ${offset}, ${count}
                 RETURN v
         `;

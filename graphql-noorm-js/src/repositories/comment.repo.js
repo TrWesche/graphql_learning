@@ -32,9 +32,17 @@ class CommentRepo {
     }
 
     // Manually Checked - OK (6/8/2021)
-    static async getAllComments(count = 10, offset = 0) {
+    static async getAllComments(count = 10, offset = 0, orderBy) {
+        const queryParams = [];
+
+        if (orderBy !== undefined) {
+            const orderByParams = orderBy.split('_');
+            queryParams.push(aql`SORT comment.${orderByParams[0]} ${orderByParams[1]}`);
+        }
+
         let query = aql`
             FOR comment IN ${collections.Comments}
+                ${aql.join(queryParams)}
                 LIMIT ${offset}, ${count}
                 RETURN comment
         `;

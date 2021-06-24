@@ -30,7 +30,7 @@ const typedef = gql`
         author: UserPublic!
         updatedAt: TimeStampUnix!
         createdAt: TimeStampUnix!
-        comments(count: Int, offset: Int): [Comment!]!
+        comments(count: Int, offset: Int, orderBy: CommentOrderByInput): [Comment!]!
     }
 `;
 

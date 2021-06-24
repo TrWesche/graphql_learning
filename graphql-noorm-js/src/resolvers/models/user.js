@@ -8,25 +8,25 @@ const resolvers = {
         UserPublic: {
             async posts(parent, args, ctx, info) {
                 const { UserRepo } = ctx;
-                const { count, offset } = args;
-                return await UserRepo.getUserPosts(parent, false, count, offset);
+                const { count, offset, orderBy } = args;
+                return await UserRepo.getUserPosts(parent, false, count, offset, orderBy);
             },
             async comments(parent, args, ctx, info) {
                 const { UserRepo } = ctx;
-                const { count, offset } = args;
-                return await UserRepo.getUserComments(parent, count, offset);
+                const { count, offset, orderBy } = args;
+                return await UserRepo.getUserComments(parent, count, offset, orderBy);
             }
         },
         UserPrivate: {
             async posts(parent, args, ctx, info) {
                 const { UserRepo } = ctx;
-                const { count, offset } = args;
-                return await UserRepo.getUserPosts(parent, true, count, offset);
+                const { count, offset, orderBy } = args;
+                return await UserRepo.getUserPosts(parent, true, count, offset, orderBy);
             },
             async comments(parent, args, ctx, info) {
                 const { UserRepo } = ctx;
-                const { count, offset } = args;
-                return await UserRepo.getUserComments(parent, count, offset);
+                const { count, offset, orderBy } = args;
+                return await UserRepo.getUserComments(parent, count, offset, orderBy);
             }
         }
     },
@@ -34,17 +34,17 @@ const resolvers = {
     Query: {
         async users(parent, args, ctx, info) {
             const { UserRepo } = ctx;
-            const { key, query, count, offset } = args;
+            const { key, query, count, offset, orderBy } = args;
 
             if (key) {
                 return await UserRepo.getUserByKey(key);
             }
     
             if (query) {
-                return await UserRepo.getUsersByName(query, count, offset);
+                return await UserRepo.getUsersByName(query, count, offset, orderBy);
             }
     
-            return await UserRepo.getAllUsers(count, offset);
+            return await UserRepo.getAllUsers(count, offset, orderBy);
         },
         async userPrivate(parent, args, ctx, info) {
             const { AuthorizationRepo, UserRepo } = ctx;

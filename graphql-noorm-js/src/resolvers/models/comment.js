@@ -19,9 +19,9 @@ const resolvers = {
     Query: {
         async comments(parent, args, ctx, info) {
             const { CommentRepo } = ctx;
-            const { count, offset } = args;
+            const { count, offset, orderBy } = args;
             
-            return await CommentRepo.getAllComments(count, offset);
+            return await CommentRepo.getAllComments(count, offset, orderBy);
         }
     },
     // Mutation Resolvers

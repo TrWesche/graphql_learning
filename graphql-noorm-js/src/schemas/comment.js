@@ -1,6 +1,13 @@
 import gql from 'graphql-tag';
 
 const typedef = gql`
+    enum CommentOrderByInput {
+        createdAt_ASC,
+        createdAt_DESC,
+        updatedAt_ASC,
+        updatedAt_DESC
+    }
+
     input CreateCommentInput {
         text: String!
         post_key: ID!

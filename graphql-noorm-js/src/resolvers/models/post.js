@@ -9,8 +9,8 @@ const resolvers = {
             },
             async comments(parent, args, ctx, info) {
                 const { PostRepo } = ctx;
-                const { count, offset } = args;
-                return await PostRepo.getPostComments(parent, count, offset);
+                const { count, offset, orderBy } = args;
+                return await PostRepo.getPostComments(parent, count, offset, orderBy);
             }
         }
     },

@@ -3,9 +3,17 @@ import { aql } from 'arangojs'
 
 class UserRepo {
     // Manually Checked - OK (6/7/2021)
-    static async getAllUsers(count = 10, offset = 0) {
+    static async getAllUsers(count = 10, offset = 0, orderBy) {
+        const queryParams = [];
+
+        if (orderBy !== undefined) {
+            const orderByParams = orderBy.split('_');
+            queryParams.push(aql`SORT user.${orderByParams[0]} ${orderByParams[1]}`);
+        }
+
         const query = aql`
             FOR user IN ${collections.Users}
+                ${aql.join(queryParams)}
                 LIMIT ${offset}, ${count}
                 RETURN user
         `;
@@ -15,10 +23,18 @@ class UserRepo {
     }
 
     // Manually Checked - OK (6/7/2021)
-    static async getUsersByName(user_name, count = 10, offset = 0) {
+    static async getUsersByName(user_name, count = 10, offset = 0, orderBy) {
+        const queryParams = [];
+
+        if (orderBy !== undefined) {
+            const orderByParams = orderBy.split('_');
+            queryParams.push(aql`SORT user.${orderByParams[0]} ${orderByParams[1]}`);
+        }
+        
         const query = aql`
             FOR user IN ${collections.Users}
                 FILTER CONTAINS(LOWER(user.name), LOWER(${user_name}))
+                ${aql.join(queryParams)}
                 LIMIT ${offset}, ${count}
                 RETURN user
         `;
@@ -153,20 +169,19 @@ class UserRepo {
     }
 
     // Manually Checked - OK (6/8/2021)
-    static async getUserPosts(parent, authenticated = false, count = 10, offset = 0) {
-        if (authenticated) {
-            const query = aql`
-                FOR v IN 1..1 OUTBOUND ${parent} ${collections.UserPosts}
-                    RETURN v
-            `;
+    static async getUserPosts(parent, authenticated = false, count = 10, offset = 0, orderBy) {
+        const queryParams = [];
+        
+        if (!authenticated) {queryParams.push(aql`FILTER v.published == TRUE`)};
 
-            const cursor = await db.query(query);
-            return cursor.all();
+        if (orderBy !== undefined) {
+            const orderByParams = orderBy.split('_');
+            queryParams.push(aql`SORT v.${orderByParams[0]} ${orderByParams[1]}`);
         }
 
         const query = aql`
             FOR v IN 1..1 OUTBOUND ${parent} ${collections.UserPosts}
-                FILTER v.published == TRUE
+                ${aql.join(queryParams)}
                 LIMIT ${offset}, ${count}
                 RETURN v
         `;
@@ -176,9 +191,17 @@ class UserRepo {
     }
 
     // Manually Checked - OK (6/8/2021)
-    static async getUserComments(parent, count = 10, offset = 0) {
+    static async getUserComments(parent, count = 10, offset = 0, orderBy) {
+        const queryParams = [];
+
+        if (orderBy !== undefined) {
+            const orderByParams = orderBy.split('_');
+            queryParams.push(aql`SORT v.${orderByParams[0]} ${orderByParams[1]}`);
+        }
+
         const query = aql`
             FOR v IN 1..1 OUTBOUND ${parent} ${collections.UserComments}
+                ${aql.join(queryParams)}
                 LIMIT ${offset}, ${count}
                 RETURN v
         `;
