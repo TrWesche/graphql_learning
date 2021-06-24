@@ -27,13 +27,11 @@ const resolvers = {
                 orderBy
             } = args;
 
-            console.log(`${orderBy} requested`)
-
             if (!query && !author_key && !post_key) {
-                return await PostRepo.getPublicPosts(count, offset);
+                return await PostRepo.getPublicPosts(count, offset, orderBy);
             }
 
-            return await PostRepo.getFilteredPosts(query, author_key, post_key, true, count, offset);
+            return await PostRepo.getFilteredPosts(query, author_key, post_key, true, count, offset, orderBy);
         },
         async postsPrivate(parent, args, ctx, info) {
             const { AuthorizationRepo, PostRepo } = ctx;

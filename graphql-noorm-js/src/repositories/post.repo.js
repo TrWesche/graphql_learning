@@ -27,7 +27,25 @@ class PostRepo {
     }
 
     // Manually Checked - OK (6/10/2021)
-    static async getPublicPosts(count = 10, offset = 0) {
+    static async getPublicPosts(count = 10, offset = 0, orderBy) {
+
+        if (orderBy !== undefined) {
+            const orderByParams = orderBy.split('_');
+
+            const orderByQuery = aql`SORT post.${orderByParams[0]} ${orderByParams[1]}`; 
+            const query = aql`
+                FOR post IN ${collections.Posts}
+                    FILTER post.published == TRUE
+                    ${orderByQuery}
+                    LIMIT ${offset}, ${count}
+                    RETURN post
+            `;
+
+            const cursor = await db.query(query);
+            return await cursor.all();
+        };
+
+        
         const query = aql`
             FOR post IN ${collections.Posts}
                 FILTER post.published == TRUE
@@ -53,14 +71,15 @@ class PostRepo {
     }
 
     // Manually Checked - OK (6/10/2021)
-    static async getFilteredPosts(searchString, author_key, post_key, published, count = 10, offset = 0) {
+    static async getFilteredPosts(searchString, author_key, post_key, published, count = 10, offset = 0, orderBy) {
         const queryParams = [];
-
         if (searchString !== undefined) {queryParams.push(aql`FILTER LIKE(post.body, ${'%'+searchString+'%'}, true)`)};
-
         if (post_key !== undefined) {queryParams.push(aql`FILTER post._key == ${post_key}`)};
-
         if (published !== undefined) {queryParams.push(aql`FILTER post.published == ${published}`)};
+        if (orderBy !== undefined) {
+            const orderByParams = orderBy.split('_');
+            queryParams.push(aql`SORT post.${orderByParams[0]} ${orderByParams[1]}`);
+        }
 
         if (author_key !== undefined) {
             const author_id = `${collections.Users.name}/${author_key}`
