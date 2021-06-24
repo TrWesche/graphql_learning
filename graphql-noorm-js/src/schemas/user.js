@@ -39,6 +39,8 @@ const typedef = gql`
         name: String!
         email: String!
         age: Int
+        updatedAt: TimeStampUnix!
+        createdAt: TimeStampUnix!
         posts(count: Int, offset: Int): [Post!]!
         comments(count: Int, offset: Int): [Comment!]!
     }

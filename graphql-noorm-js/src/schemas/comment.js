@@ -13,6 +13,8 @@ const typedef = gql`
     type Comment {
         _key: ID!
         text: String!
+        updatedAt: TimeStampUnix!
+        createdAt: TimeStampUnix!
         author: UserPublic!
         post: Post
     }

@@ -8,7 +8,9 @@ class CommentRepo {
         const post_id = `${collections.Posts.name}/${data.post_key}`
         const query = aql`
             INSERT {
-                text: ${data.text}
+                text: ${data.text},
+                createdAt: DATE_NOW(),
+                updatedAt: DATE_NOW()
             } INTO ${collections.Comments} OPTIONS { keyOptions: { type: "padded" } }
             LET newComment = NEW
 
@@ -74,6 +76,8 @@ class CommentRepo {
         const updateValues = [];
 
         if (data.text !== undefined) {updateValues.push(aql`text: ${data.text}`)};
+
+        updateValues.push(aql`updatedAt: DATE_NOW()`);
 
         let query = aql`
             UPDATE ${comment_key}

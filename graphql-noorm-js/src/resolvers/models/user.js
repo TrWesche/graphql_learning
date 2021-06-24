@@ -129,6 +129,11 @@ const resolvers = {
             const deletedUsers = await UserRepo.deleteUser(rootValue.user);
             AuthHandling.clearCookies(response);
             return deletedUsers[0];
+        },
+        async logoutUser(parent, args, ctx, info) {
+            const { response } = ctx;
+            AuthHandling.clearCookies(response);
+            return "Logout Successful";
         }
     }
 }

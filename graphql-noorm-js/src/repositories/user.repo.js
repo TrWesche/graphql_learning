@@ -60,7 +60,9 @@ class UserRepo {
                 name: ${data.name},
                 email: TRIM(${data.email}),
                 age: ${data.age ? data.age : null},
-                password: ${data.password}
+                password: ${data.password},
+                createdAt: DATE_NOW(),
+                updatedAt: DATE_NOW()
             } INTO ${collections.Users} OPTIONS { keyOptions: { type: "padded" } }
             RETURN NEW
         `;
@@ -93,6 +95,8 @@ class UserRepo {
         if (data.email !== undefined) {updateValues.push(aql`email: ${data.email}`)};
 
         if (data.password !== undefined) {updateValues.push(aql`password: ${data.password}`)};
+
+        updateValues.push(aql`updatedAt: DATE_NOW()`);
 
         const query = aql`
             UPDATE ${user_object.key}

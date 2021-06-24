@@ -15,10 +15,12 @@ const resolvers = {
         }
     },
     // Query Resolvers
+    // TODO: Research if there is a way to user an id as a starting point, like cursors
     Query: {
         async comments(parent, args, ctx, info) {
             const { CommentRepo } = ctx;
             const { count, offset } = args;
+            
             return await CommentRepo.getAllComments(count, offset);
         }
     },

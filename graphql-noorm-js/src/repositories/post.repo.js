@@ -9,7 +9,9 @@ class PostRepo {
             INSERT {
                 title: ${data.title},
                 body: ${data.body},
-                published: ${data.published ? data.published : false}
+                published: ${data.published ? data.published : false},
+                createdAt: DATE_NOW(),
+                updatedAt: DATE_NOW()
             } INTO ${collections.Posts} OPTIONS { keyOptions: { type: "padded" } }
             LET newPost = NEW
 
@@ -108,6 +110,8 @@ class PostRepo {
 
         if (data.published !== undefined) {updateValues.push(aql`published: ${data.published}`)};
 
+        updateValues.push(aql`updatedAt: DATE_NOW()`);
+        
         const query = aql`
             UPDATE ${post_key}
             WITH {${aql.join(updateValues, " ,")}}
