@@ -18,7 +18,16 @@ const resolvers = {
     Query: {
         async posts(parent, args, ctx, info) {
             const { PostRepo } = ctx;
-            const { query, author_key, post_key, count, offset } = args;
+            const { 
+                query, 
+                author_key, 
+                post_key, 
+                count, 
+                offset,
+                orderBy
+            } = args;
+
+            console.log(`${orderBy} requested`)
 
             if (!query && !author_key && !post_key) {
                 return await PostRepo.getPublicPosts(count, offset);

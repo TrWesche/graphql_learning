@@ -1,6 +1,15 @@
 import gql from 'graphql-tag';
 
 const typedef = gql`
+    enum PostOrderByInput {
+        title_ASC,
+        title_DESC,
+        createdAt_ASC,
+        createdAt_DESC,
+        updatedAt_ASC,
+        updatedAt_DESC
+    }
+
     input CreatePostInput {
         title: String!
         body: String!
