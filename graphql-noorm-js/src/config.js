@@ -1,86 +1,23 @@
+import path from 'path';
 import dotenv from 'dotenv';
-// require("dotenv").config();
-dotenv.config();
 
-// TODO: Get babel working so the environment variables are read at runtime
+dotenv.config({path: path.resolve(__dirname, '.env')});
 
 // ARANGODB Database Information
-// const ARANGODB_ADDRESS = process.env.ARANGODB_ADDRESS;
-// const ARANGODB_NAME = process.env.ARANGODB_NAME;
-// const ARANGODB_USER = process.env.ARANGODB_USER;
-// const ARANGODB_PASSWORD = process.env.ARANGODB_PASSWORD;
-
-const ARANGODB_ADDRESS = "http://127.0.0.1:1234/";
-const ARANGODB_NAME = "GRAPHQL_LRN";
-const ARANGODB_USER = "root";
-const ARANGODB_PASSWORD = "graphqlandarangodb";
+const ARANGODB_ADDRESS = process.env.ARANGODB_ADDRESS;
+const ARANGODB_NAME = process.env.ARANGODB_NAME;
+const ARANGODB_USER = process.env.ARANGODB_USER;
+const ARANGODB_PASSWORD = process.env.ARANGODB_PASSWORD;
 
 // Node Environment
-// const NODE_ENV = process.env.NODE_ENV;
-
 const NODE_ENV = "dev";
 
 // Security Information
-// const PRIVATE_KEY = process.env.PRIVATE_KEY.replace(/\\n/gm, '\n');
-// const BCRYPT_WORK_FACTOR = process.env.BCRYPT_WORK_FACTOR;
-
-const PRIVATE_KEY = `-----BEGIN RSA PRIVATE KEY-----
-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
------END RSA PRIVATE KEY-----`
-const BCRYPT_WORK_FACTOR = 12;
+const PRIVATE_KEY = process.env.PRIVATE_KEY ? process.env.PRIVATE_KEY.replace(/\\n/gm, '\n') : undefined;
+const BCRYPT_WORK_FACTOR = process.env.BCRYPT_WORK_FACTOR;
 
 // Permitted Access Addresses
-// const ORIGIN_WEBAPP = process.env.ORIGIN_WEBAPP;
-
-const ORIGIN_WEBAPP = "http://127.0.0.1:3000/";
+const ORIGIN_WEBAPP = process.env.ORIGIN_WEBAPP;
 
 export {
     ARANGODB_ADDRESS,

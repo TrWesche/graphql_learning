@@ -2,5 +2,6 @@ node_modules
 dist
 .env
 *.pem
+lib
 
 /database-adb/Readme.md
