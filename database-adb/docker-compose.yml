@@ -5,7 +5,7 @@ services:
         image: arangodb:latest
         restart: always
         ports:
-            - 1234:8529
+            - 8529:8529
         environment:
             ARANGO_ROOT_PASSWORD: graphqlandarangodb
         volumes:

@@ -8,6 +8,7 @@ import { execute, subscribe } from "graphql";
 const { PubSub } = require('graphql-subscriptions');
 const { SubscriptionServer } = require('subscriptions-transport-ws');
 
+import { PORT } from './config';
 import { processJWT } from './middleware/auth';
 
 import schema from './schema';
@@ -27,7 +28,7 @@ const pubsub = new PubSub();
 
 app.use(cors({
   credentials: true,
-  origin: "http://localhost:4000"
+  origin: `http://localhost:${PORT}`
 }));
 app.use(cookieParser());
 app.use(processJWT);
@@ -48,9 +49,9 @@ app.use(
   }))
 );
 
-const server = app.listen(4000, () => {
+const server = app.listen(PORT, () => {
   console.log(`\
-    🚀 Server ready at on port 4000
+    🚀 Server ready at on port ${PORT}
   `);
 });
 

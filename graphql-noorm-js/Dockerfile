@@ -4,7 +4,7 @@
 ## Part 1 - Build the Production React Image
 
 # Specify the starting point image from docker-hub.  In this case its a docker image with node.js preinstalled on alpine linux.
-FROM node:15.9.0-alpine3.10
+FROM node:16-alpine3.11
 
 EXPOSE 5000
 
@@ -12,7 +12,9 @@ EXPOSE 5000
 WORKDIR /app
 
 # Copy across the dependency description
-COPY ./src /app
+COPY ./lib /app
+COPY package.json /app
+COPY package-lock.json /app
 
 # Will execute npm install in /app due to WORKDIR selection
 RUN npm install

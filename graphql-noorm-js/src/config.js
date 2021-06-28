@@ -3,6 +3,9 @@ import dotenv from 'dotenv';
 
 dotenv.config({path: path.resolve(__dirname, '.env')});
 
+const PORT = process.env.PORT;
+
+
 // ARANGODB Database Information
 const ARANGODB_ADDRESS = process.env.ARANGODB_ADDRESS;
 const ARANGODB_NAME = process.env.ARANGODB_NAME;
@@ -20,6 +23,7 @@ const BCRYPT_WORK_FACTOR = process.env.BCRYPT_WORK_FACTOR;
 const ORIGIN_WEBAPP = process.env.ORIGIN_WEBAPP;
 
 export {
+    PORT,
     ARANGODB_ADDRESS,
     ARANGODB_NAME,
     ARANGODB_USER,

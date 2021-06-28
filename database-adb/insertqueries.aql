@@ -1,7 +1,7 @@
 LET userCores = [
-    {name: 'Trent', email: 'trent@example.com', age: 32},
-    {name: 'Camille', email: 'camille@example.com'},
-    {name: 'Zoltar', email: 'zoltar@example.com', age: 1000}
+    {name: 'Trent', email: 'trent@example.com', age: 32, createdAt: 1624831262, updatedAt: 1624831262},
+    {name: 'Camille', email: 'camille@example.com', createdAt: 1624831280, updatedAt: 1624831280},
+    {name: 'Zoltar', email: 'zoltar@example.com', age: 1000, createdAt: 1604831262, updatedAt: 1624831312}
 ]
 
 FOR userCore IN userCores
@@ -9,10 +9,10 @@ FOR userCore IN userCores
 
 
 LET postCores = [
-    {title: 'My First Post', body: 'Body of the first post', published: true},
-    {title: 'My Second Post', body: 'Body of the second post', published: true},
-    {title: 'My Third Post', body: 'Body of the third post', published: false},
-    {title: 'My Fourth Upload', body: 'This is the text for the fourth upload', published: true}
+    {title: 'My First Post', body: 'Body of the first post', published: true, createdAt: 1624831331, updatedAt: 1624831331},
+    {title: 'My Second Post', body: 'Body of the second post', published: true, createdAt: 1624831280, updatedAt: 1624831331},
+    {title: 'My Third Post', body: 'Body of the third post', published: false, createdAt: 1624831331, updatedAt: 1624831331},
+    {title: 'My Fourth Upload', body: 'This is the text for the fourth upload', published: true, createdAt: 1624831393, updatedAt: 1624831400}
 ]
 
 FOR postCore in postCores
@@ -43,10 +43,10 @@ FOR upVertex in userPostVertex
 
 
 LET commentCores = [
-    {text: 'This is the first comment on post 1 - comment1'},
-    {text: 'This is the second comment on post 1 - comment2'},
-    {text: 'This is the first comment on post 3 - comment3'},
-    {text: 'This is the first comment on post 4 - comment4'}
+    {text: 'This is the first comment on post 1 - comment1', createdAt: 1624831331, updatedAt: 1624831331},
+    {text: 'This is the second comment on post 1 - comment2', createdAt: 1624831321, updatedAt: 1624831466},
+    {text: 'This is the first comment on post 3 - comment3', createdAt: 1624831131, updatedAt: 1624831331},
+    {text: 'This is the first comment on post 4 - comment4', createdAt: 1624831331, updatedAt: 1624831490}
 ]
 
 FOR commentCore IN commentCores
