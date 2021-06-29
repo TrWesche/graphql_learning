@@ -3,5 +3,6 @@ dist
 .env
 *.pem
 lib
+dockercmds.md
 
 /database-adb/Readme.md
