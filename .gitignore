@@ -4,5 +4,8 @@ dist
 *.pem
 lib
 dockercmds.md
+azuredeploy.json
+azuredeployinst.md
+docker-compose.azure.yml    
 
 /database-adb/Readme.md

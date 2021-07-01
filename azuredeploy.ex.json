@@ -1,0 +1,167 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "containerGroupName": {
+        "type": "string",
+        "defaultValue": "<Container Group Name>",
+        "metadata": {
+          "description": "<Container Group Description>"
+        }
+      },
+      "imageRegistryLoginServer" :{
+          "type": "string",
+          "defaultValue": "<Registry Server Address>"
+      },
+      "imageRegistryUsername" :{
+          "type": "string",
+          "defaultValue": "<Registry Server Username>"
+      },
+      "imageRegistryPassword" :{
+          "type": "string",
+          "defaultValue": "<Registry Server Password>"
+      }
+    },
+    "variables": {
+      "container1name": "<Target Name for Container 1>",
+      "container1image": "<Location and Version of Docker Container 1>",
+      "container2name": "<Target Name for Container 2>",
+      "container2image": "<Location and Version of Docker Container 2>"
+    },
+    "resources": [
+      {
+        "name": "[parameters('containerGroupName')]",
+        "type": "Microsoft.ContainerInstance/containerGroups",
+        "apiVersion": "2021-03-01",
+        "location": "[resourceGroup().location]",
+        "properties": {
+          "containers": [
+            {
+              "name": "[variables('container1name')]",
+              "properties": {
+                "image": "[variables('container1image')]",
+                "resources": {
+                  "requests": {
+                    "cpu": 1,
+                    "memoryInGB": 1.5
+                  }
+                },
+                "ports": [
+                  {
+                    "port": 80
+                  },
+                  {
+                    "port": 8080
+                  }
+                ],
+                "environmentVariables": [
+                    {
+                        "name": "PORT",
+                        "value": "80"
+                    },
+                    {
+                        "name": "ARANGODB_ADDRESS",
+                        "value": "http://<DNSNameLabel from IPAddress>.<Azure Location>.azurecontainer.io:8529"
+                    },
+                    {
+                        "name": "ARANGODB_NAME",
+                        "value": "<Target Database Name>"
+                    },
+                    {
+                        "name": "ARANGODB_USER",
+                        "secureValue": "<Database Login User>"
+                    },
+                    {
+                        "name": "ARANGODB_PASSWORD",
+                        "secureValue": "<Database Login Password>"
+                    },
+                    {
+                        "name": "BCRYPT_WORK_FACTOR",
+                        "secureValue": "12"
+                    },
+                    {
+                        "name": "NODE_ENV",
+                        "secureValue": "dev"
+                    },
+                    {
+                        "name": "PRIVATE_KEY",
+                        "secureValue": "<Private Key Value>"
+                    },
+                    {
+                        "name": "ORIGIN_WEBAPP",
+                        "value": "http://127.0.0.1:3000"
+                    }
+                ]
+              }
+            },
+            {
+              "name": "[variables('container2name')]",
+              "properties": {
+                "image": "[variables('container2image')]",
+                "resources": {
+                  "requests": {
+                    "cpu": 1,
+                    "memoryInGB": 1.5
+                  }
+                },
+                "ports": [
+                  {
+                    "port": 1234
+                  },
+                  {
+                    "port": 8529
+                  }
+                ],
+                "environmentVariables": [
+                    {
+                        "name": "PORT",
+                        "value": "8529"
+                    },
+                    {
+                        "name": "ARANGO_ROOT_PASSWORD",
+                        "secureValue": "<Database Root Password>"
+                    }
+                ]
+              }
+            }
+          ],
+          "imageRegistryCredentials":[
+            {
+                "server": "[parameters('imageRegistryLoginServer')]",
+                "username": "[parameters('imageRegistryUsername')]",
+                "password": "[parameters('imageRegistryPassword')]"
+            }   
+          ],
+          "osType": "Linux",
+          "ipAddress": {
+            "type": "Public",
+            "ports": [
+              {
+                "protocol": "TCP",
+                "port": 80
+              },
+              {
+                "protocol": "TCP",
+                "port": 8080
+              },
+              {
+                "protocol": "TCP",
+                "port": 1234
+              },
+              {
+                "protocol": "TCP",
+                "port": 8529
+              }
+            ],
+            "dnsNameLabel": "<Target FQDN>"
+          }
+        }
+      }
+    ],
+    "outputs": {
+      "containerIPv4Address": {
+        "type": "string",
+        "value": "[reference(resourceId('Microsoft.ContainerInstance/containerGroups/', parameters('containerGroupName'))).ipAddress.ip]"
+      }
+    }
+  }
