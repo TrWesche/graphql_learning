@@ -1,7 +1,7 @@
 LET userCores = [
-    {name: 'Trent', email: 'trent@example.com', age: 32, createdAt: 1624831262, updatedAt: 1624831262},
-    {name: 'Camille', email: 'camille@example.com', createdAt: 1624831280, updatedAt: 1624831280},
-    {name: 'Zoltar', email: 'zoltar@example.com', age: 1000, createdAt: 1604831262, updatedAt: 1624831312}
+    {name: 'Trent', email: 'trent@example.com', age: 32, createdAt: 1624831262, updatedAt: 1624831262, password: $2b$12$97PJclCMtof97KknsR.myuzP3KtmRUK7Mx8sFG1oxMFUPnLy2SwTu},
+    {name: 'Camille', email: 'camille@example.com', createdAt: 1624831280, updatedAt: 1624831280, password: $2b$12$97PJclCMtof97KknsR.myuzP3KtmRUK7Mx8sFG1oxMFUPnLy2SwTu},
+    {name: 'Zoltar', email: 'zoltar@example.com', age: 1000, createdAt: 1604831262, updatedAt: 1624831312, password: $2b$12$97PJclCMtof97KknsR.myuzP3KtmRUK7Mx8sFG1oxMFUPnLy2SwTu}
 ]
 
 FOR userCore IN userCores

@@ -58,3 +58,5 @@ const server = app.listen(PORT, () => {
 SubscriptionServer.create({ schema, execute, subscribe }, {
   server
 });
+
+export default app;

@@ -6,7 +6,8 @@
   "scripts": {
     "build": "babel src -d lib",
     "start": "nodemon --ext js,graphql --exec ./node_modules/.bin/babel-node src/server.js ",
-    "start-prod": "node lib/server.js"
+    "start-prod": "node lib/server.js",
+    "test": "jest test"
   },
   "keywords": [],
   "author": "",
@@ -32,6 +33,8 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.7.0",
-    "nodemon": "^2.0.7"
+    "jest": "^27.0.6",
+    "nodemon": "^2.0.7",
+    "supertest": "^6.1.3"
   }
 }
